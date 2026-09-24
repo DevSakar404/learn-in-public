@@ -1,4 +1,6 @@
 import "server-only";
+import { ContentGenerationService } from "@/application/content-generation-service";
+import { defaultStrategies } from "@/application/content/strategies/registry";
 import { DashboardService } from "@/application/dashboard-service";
 import { NoteService } from "@/application/note-service";
 import { PostService } from "@/application/post-service";
@@ -6,6 +8,8 @@ import { SlugService } from "@/application/slug-service";
 import { SubscriberService } from "@/application/subscriber-service";
 import { TopicService } from "@/application/topic-service";
 import type { IClock } from "@/domain/clock";
+import { MastraContentGenerator } from "@/infrastructure/ai/mastra-content-generator";
+import { modelConfig } from "@/infrastructure/ai/model-provider";
 import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
 import { getEnv } from "@/infrastructure/config/env";
 import { SupabaseNoteRepository } from "@/infrastructure/repositories/supabase-note-repository";
@@ -23,6 +27,9 @@ import { SystemClock } from "@/infrastructure/system-clock";
  */
 const clock: IClock = new SystemClock();
 const slugs = new SlugService();
+const strategies = defaultStrategies();
+let generator: MastraContentGenerator | undefined;
+const contentGenerator = () => (generator ??= new MastraContentGenerator(modelConfig(getEnv())));
 
 function repositories(db: Db) {
   return {
@@ -58,6 +65,16 @@ export const container = {
     posts: async () => {
       const { posts } = repositories(await createSupabaseServerClient());
       return new PostService(posts, posts);
+    },
+    generation: async () => {
+      const r = repositories(await createSupabaseServerClient());
+      return new ContentGenerationService(
+        r.notes,
+        r.posts,
+        r.posts,
+        contentGenerator(),
+        strategies,
+      );
     },
     dashboard: async () => {
       const r = repositories(await createSupabaseServerClient());
