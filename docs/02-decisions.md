@@ -50,3 +50,15 @@ The log of choices and why they were made. Newest decisions go at the bottom. To
 | Prompt order: fixed voice + platform instructions first, note last                                     | Gets implicit provider prompt caching for free.                                           |
 | Synchronous server action, `Promise.allSettled` across platforms, 45s timeout each, `maxDuration = 60` | Simplest option that isolates each platform's failure. The v2 plan is a background queue. |
 | `LLM_MODEL` must be pinned (no `-latest`)                                                              | Model upgrades are deliberate changes.                                                    |
+
+## Implementation notes (build phase)
+
+| Decision                                                                                                                             | Why                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Mastra model router with an explicit `{ id: "provider/model", apiKey }`                                                              | The key comes from validated env instead of Mastra reading `process.env` implicitly. Switching provider is still an env change. |
+| A new `Agent` per call, `instructions` = voice + platform prompt, `maxSteps: 1`, `maxRetries: 0`                                     | Stateless one-shot drafts. No hidden retries eating the free-tier quota: the UI's Retry button is the retry.                    |
+| `structuredOutput.errorStrategy: "warn"`, then our own `schema.safeParse`                                                            | We decide what "invalid" means (e.g. 270-character tweets), and the raw output is logged on failure.                            |
+| `revalidatePath("/", "layout")` on every mutation                                                                                    | One line, always correct for a small blog. Per-note tags are tech debt #7.                                                      |
+| Auth = `IAuthGateway` (domain) + `SupabaseAuthGateway`                                                                               | Actions reach auth through the container like any other dependency. `requireAdminPage()` / `authorize()` in `app/_lib/auth.ts`. |
+| The `Next 16 proxy` refreshes the session and does the optimistic check via `getClaims()`; pages and actions verify with `getUser()` | `getUser()` asks the auth server, so a forged or expired cookie can't pass.                                                     |
+| React 19 resets forms after an action, so the note editor is fully controlled and login/newsletter echo `values` back                | Nobody loses what they typed on a validation error.                                                                             |

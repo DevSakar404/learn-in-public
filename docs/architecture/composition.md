@@ -9,21 +9,25 @@
 ```ts
 import "server-only";
 
-const clock: IClock = new SystemClock(); // stateless → a singleton
+const clock: IClock = new SystemClock(); // stateless → one instance
+const strategies = defaultStrategies();
 
-// Stateful per request (cookie session) → an async factory
-export async function adminNoteService() {
-  const db = await createSupabaseServerClient();
-  const repo = new SupabaseNoteRepository(db);
-  return new NoteService(repo, repo, new SlugService((s) => repo.slugExists(s)), clock);
-}
-
-// Public pages → cookie-less client, so the route can be statically generated
-export function publicNoteService() {
-  const repo = new SupabaseNoteRepository(createSupabasePublicClient());
-  return new NoteService(repo, repo, new SlugService((s) => repo.slugExists(s)), clock);
-}
+export const container = {
+  config: () => ({ siteUrl, timeZone }),
+  auth: async () => new SupabaseAuthGateway(await createSupabaseServerClient()),
+  // Cookie session → admin pages/actions (dynamic routes)
+  admin: {
+    notes: async () => noteService(await createSupabaseServerClient()),
+    generation: async () => new ContentGenerationService(/* repos */, contentGenerator(), strategies),
+    // topics, posts, subscribers, dashboard …
+  },
+  // Cookie-less client → public pages stay statically generated
+  public: { notes: () => noteService(createSupabasePublicClient()), topics, subscribers },
+};
 ```
+
+Usage in the app layer: `await (await container.admin.notes()).publish(id)` or `container.public.notes().listPublished()`.
+The test-side twin is `test/fakes/setup.ts`: the same wiring with in-memory fakes.
 
 ## How to add a dependency
 

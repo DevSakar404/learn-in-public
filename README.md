@@ -41,12 +41,13 @@ pnpm dev                # http://localhost:3000, admin at /admin
 
 ## Scripts
 
-| Script                                       | What it does                    |
-| -------------------------------------------- | ------------------------------- |
-| `pnpm dev` / `build` / `start`               | Next.js                         |
-| `pnpm lint` · `pnpm typecheck` · `pnpm test` | Quality checks (all must pass)  |
-| `pnpm format`                                | Prettier                        |
-| `pnpm seed:admin`                            | Create or update the admin user |
+| Script                                       | What it does                                       |
+| -------------------------------------------- | -------------------------------------------------- |
+| `pnpm dev` / `build` / `start`               | Next.js                                            |
+| `pnpm lint` · `pnpm typecheck` · `pnpm test` | Quality checks (all must pass)                     |
+| `pnpm format`                                | Prettier                                           |
+| `pnpm seed:admin`                            | Create or update the admin user                    |
+| `pnpm test:db`                               | Run the repository contract against local Supabase |
 
 ## Deploy (Vercel)
 

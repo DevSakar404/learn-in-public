@@ -10,17 +10,19 @@ Tests sit next to the code (`*.test.ts`). Shared fakes live in `test/fakes/`, co
 - Slug logic, streak logic, CSV escaping.
 - Components and routes: no unit tests. Business logic doesn't live there.
 
-## Fakes
+## Fakes (`test/fakes/`)
 
-| Fake                            | Replaces                                                                       |
-| ------------------------------- | ------------------------------------------------------------------------------ |
-| `InMemoryNoteRepository` (etc.) | `Supabase*Repository` (implements the same reader + writer interfaces)         |
-| `FakeContentGenerator`          | `MastraContentGenerator` (returns canned output or a chosen `GenerationError`) |
-| `FixedClock`                    | `SystemClock`                                                                  |
+| File                        | What                                                                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `in-memory-store.ts`        | `InMemoryStore` + `InMemory{Topic,Note,Post,Subscriber}Repository`. They share one store, so foreign keys and cascades behave like Postgres. |
+| `fake-content-generator.ts` | Replaces `MastraContentGenerator`: canned output (validated by the request's schema) or a chosen `GenerationError` via `failWith`            |
+| `fixed-clock.ts`            | Replaces `SystemClock`                                                                                                                       |
+| `setup.ts`                  | The test composition root: `setup()` returns every service wired to fakes, plus `seedNote()`                                                 |
+| `sample-content.ts`         | One valid sample per platform                                                                                                                |
 
 ## Liskov contract tests
 
-`test/contracts/note-repository.contract.ts` exports `runNoteRepositoryContract(makeRepo)`. It runs against the in-memory repo always, and against Supabase when `SUPABASE_TEST=1` (local DB running). If a fake and the real repo disagree, the contract fails.
+`test/contracts/note-repository.contract.ts` exports `runNoteRepositoryContract(make)`. It always runs against the in-memory repos. `pnpm test:db` also runs it against local Supabase (secret key, test-only), cleaning up after itself. If a fake and the real repo disagree, the contract fails.
 
 ## Style
 

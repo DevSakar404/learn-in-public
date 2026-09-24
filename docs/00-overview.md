@@ -24,13 +24,13 @@
 | #                                | Feature                         | Phase | Status |
 | -------------------------------- | ------------------------------- | ----- | ------ |
 | —                                | Setup (tooling, skeleton, docs) | 0     | ✅     |
-| [F1](features/F1-admin-auth.md)  | Admin auth                      | 1     | ⏳     |
-| [F2](features/F2-topics.md)      | Topics                          | 2     | ⏳     |
-| [F3](features/F3-notes-admin.md) | Notes admin                     | 2     | ⏳     |
-| [F4](features/F4-public-blog.md) | Public blog                     | 2     | ⏳     |
-| [F5](features/F5-seo-feeds.md)   | SEO + feeds                     | 2     | ⏳     |
-| [F6](features/F6-ai-drafts.md)   | AI drafts                       | 3     | ⏳     |
-| [F7](features/F7-newsletter.md)  | Newsletter                      | 4     | ⏳     |
-| [F8](features/F8-dashboard.md)   | Dashboard                       | 4     | ⏳     |
+| [F1](features/F1-admin-auth.md)  | Admin auth                      | 1     | ✅     |
+| [F2](features/F2-topics.md)      | Topics                          | 2     | ✅     |
+| [F3](features/F3-notes-admin.md) | Notes admin                     | 2     | ✅     |
+| [F4](features/F4-public-blog.md) | Public blog                     | 2     | ✅     |
+| [F5](features/F5-seo-feeds.md)   | SEO + feeds                     | 2     | ✅     |
+| [F6](features/F6-ai-drafts.md)   | AI drafts                       | 3     | ✅     |
+| [F7](features/F7-newsletter.md)  | Newsletter                      | 4     | ✅     |
+| [F8](features/F8-dashboard.md)   | Dashboard                       | 4     | ✅     |
 
 **Out of scope:** auto-publishing, sending email, multiple users/roles, comments/likes/analytics, image generation. See [03-tech-debt.md](03-tech-debt.md) for what comes later.

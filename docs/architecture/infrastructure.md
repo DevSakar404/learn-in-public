@@ -9,13 +9,13 @@
 
 ```
 infrastructure/
-  config/env.ts            Zod-validated, server-only env (getEnv)
-  supabase/server-client.ts   createServerClient (cookie session, admin pages/actions)
-            public-client.ts  cookie-less publishable-key client (public pages, so they stay static)
-            database.types.ts generated; never edit by hand
-  repositories/            Supabase<Name>Repository + mappers.ts (row ↔ entity)
-  ai/                      MastraContentGenerator · model-provider.ts (LLM_PROVIDER → model)
-  auth/                    requireAdmin() · isAdmin(user)
+  config/env.ts               Zod-validated, server-only env (getEnv)
+  supabase/server-client.ts   cookie-session client (admin pages/actions) + the Db type
+           public-client.ts   cookie-less publishable-key client (public pages, so they stay static)
+           database.types.ts  generated; never edit by hand
+  repositories/               Supabase<Name>Repository · mappers.ts (row ↔ entity) · db-errors.ts (PG codes → domain errors)
+  ai/                         MastraContentGenerator · model-provider.ts (LLM_PROVIDER → model) · error-mapping.ts
+  auth/                       SupabaseAuthGateway · is-admin.ts · proxy-session.ts (used by src/proxy.ts)
   system-clock.ts
 ```
 

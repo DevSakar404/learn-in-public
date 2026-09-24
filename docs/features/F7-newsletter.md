@@ -4,7 +4,7 @@
 
 **Stories:** a visitor subscribes from the public pages. The admin sees the list, a count, and exports CSV.
 
-**Files by layer:** domain `subscriber/` · application `SubscriberService` · infra `SupabaseSubscriberRepository` · app `actions/subscribe.ts`, `admin/subscribers/`, `admin/subscribers/export/route.ts` · components `newsletter-form.tsx` · lib `csv.ts`
+**Files by layer:** domain `subscriber/` · application `SubscriberService` · infra `SupabaseSubscriberRepository` · app `actions/subscribe.ts`, `admin/subscribers/`, `admin/subscribers/export/route.ts` · components `newsletter-form.tsx` · application `csv.ts`
 
 **Rules**
 
