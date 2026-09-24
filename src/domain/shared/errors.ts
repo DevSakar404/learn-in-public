@@ -26,7 +26,19 @@ export class ConflictError extends DomainError {
 
 export class UnauthorizedError extends DomainError {
   readonly code = "UNAUTHORIZED";
-  constructor() {
-    super("Admin access required");
+  constructor(message = "Admin access required") {
+    super(message);
+  }
+}
+
+export type GenerationErrorKind = "timeout" | "rate_limit" | "invalid_output" | "provider";
+
+export class GenerationError extends DomainError {
+  readonly code = "GENERATION";
+  constructor(
+    readonly kind: GenerationErrorKind,
+    message: string,
+  ) {
+    super(message);
   }
 }
