@@ -16,6 +16,7 @@ flowchart TD
 ```
 
 **In plain words**
+
 1. **The browser only talks to Next.js.** Visitors get cached pages. The admin submits forms that run server actions. The browser never touches the database or the AI directly, so no secrets reach it.
 2. **Next.js stays thin.** It checks the input (Zod), confirms the admin, calls one service, and shows the result.
 3. **Services hold all the rules** (when a note counts as published, what makes a slug unique). They're plain TypeScript with no frameworks, so they're easy to test.
