@@ -47,6 +47,8 @@ const subscriberService = (db: Db) => {
 };
 
 export const container = {
+  config: () => ({ siteUrl: getEnv().SITE_URL, timeZone: getEnv().SITE_TIMEZONE }),
+
   auth: async () => new SupabaseAuthGateway(await createSupabaseServerClient()),
 
   admin: {

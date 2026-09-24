@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { afterEach, expect, it } from "vitest";
 import type { INoteReader, INoteWriter } from "@/domain/note/note-repository";
 import type { ITopicReader, ITopicWriter } from "@/domain/topic/topic-repository";
 
@@ -13,10 +13,21 @@ export interface ContractRepos {
  */
 export function runNoteRepositoryContract(make: () => Promise<ContractRepos>) {
   const unique = () => `c-${crypto.randomUUID().slice(0, 8)}`;
+  const created: { repos: ContractRepos; noteIds: string[]; topicIds: string[] }[] = [];
+
+  // Leave the database as we found it (matters when running against a real Supabase).
+  afterEach(async () => {
+    for (const { repos, noteIds, topicIds } of created.splice(0)) {
+      for (const id of noteIds) await repos.notes.delete(id);
+      for (const id of topicIds) await repos.topics.delete(id);
+    }
+  });
 
   async function seed(repos: ContractRepos) {
     const topic = await repos.topics.create({ name: "Contract", slug: unique(), description: "" });
     if (!topic.ok) throw topic.error;
+    const track = { repos, noteIds: [] as string[], topicIds: [topic.value.id] };
+    created.push(track);
     const note = await repos.notes.create({
       title: "Contract note",
       slug: unique(),
@@ -26,6 +37,7 @@ export function runNoteRepositoryContract(make: () => Promise<ContractRepos>) {
       videoUrl: null,
     });
     if (!note.ok) throw note.error;
+    track.noteIds.push(note.value.id);
     return { topic: topic.value, note: note.value };
   }
 
