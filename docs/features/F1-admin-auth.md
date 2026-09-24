@@ -9,7 +9,7 @@
 
 **Files by layer**
 
-- db: `supabase/config.toml` (`enable_signup = false`), RLS admin predicate ([database.md](../architecture/database.md))
+- db: `supabase/config.toml` (`[auth] enable_signup = false`; keep `[auth.email] enable_signup = true`, because false there disables email **logins**), RLS admin predicate ([database.md](../architecture/database.md))
 - infra: `auth/require-admin.ts`, `auth/is-admin.ts`, `supabase/server-client.ts`
 - app: `src/proxy.ts`, `app/login/`, `app/admin/layout.tsx`, `app/actions/auth.ts`
 - scripts: `scripts/seed-admin.ts` (`pnpm seed:admin`, idempotent, uses the secret key)
@@ -18,7 +18,7 @@
 
 - Admin = `app_metadata.role === "admin"` (`app_metadata` can only be set by the server/admin API, so users can't forge it).
 - Every admin action and page calls `requireAdmin()`. The proxy check alone isn't enough.
-- Production: Supabase Dashboard → Authentication → Sign In / Providers → turn off **"Allow new users to sign up"**.
+- Production: Supabase Dashboard → Authentication → Sign In / Providers → turn off **"Allow new users to sign up"**, but leave the **Email** provider enabled (the admin logs in with it).
 
 **Done when**
 

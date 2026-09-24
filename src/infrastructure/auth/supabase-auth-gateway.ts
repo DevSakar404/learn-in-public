@@ -9,7 +9,13 @@ export class SupabaseAuthGateway implements IAuthGateway {
 
   async signIn(email: string, password: string): Promise<Result<AdminUser>> {
     const { data, error } = await this.db.auth.signInWithPassword({ email, password });
-    if (error || !data.user) return err(new UnauthorizedError("Invalid email or password"));
+    if (error?.code === "invalid_credentials")
+      return err(new UnauthorizedError("Invalid email or password"));
+    if (error || !data.user) {
+      // Not the user's fault (e.g. auth misconfigured or down): say so instead of blaming the password.
+      console.error("[auth] sign-in failed", { code: error?.code, message: error?.message });
+      return err(new UnauthorizedError("Sign-in is unavailable right now. Check the server logs."));
+    }
     if (!isAdmin(data.user)) {
       await this.db.auth.signOut();
       return err(new UnauthorizedError("This account doesn't have admin access"));
