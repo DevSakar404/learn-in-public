@@ -1,13 +1,71 @@
 import "server-only";
+import { DashboardService } from "@/application/dashboard-service";
+import { NoteService } from "@/application/note-service";
+import { PostService } from "@/application/post-service";
+import { SlugService } from "@/application/slug-service";
+import { SubscriberService } from "@/application/subscriber-service";
+import { TopicService } from "@/application/topic-service";
 import type { IClock } from "@/domain/clock";
+import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
+import { getEnv } from "@/infrastructure/config/env";
+import { SupabaseNoteRepository } from "@/infrastructure/repositories/supabase-note-repository";
+import { SupabasePostRepository } from "@/infrastructure/repositories/supabase-post-repository";
+import { SupabaseSubscriberRepository } from "@/infrastructure/repositories/supabase-subscriber-repository";
+import { SupabaseTopicRepository } from "@/infrastructure/repositories/supabase-topic-repository";
+import { createSupabasePublicClient } from "@/infrastructure/supabase/public-client";
+import { createSupabaseServerClient, type Db } from "@/infrastructure/supabase/server-client";
 import { SystemClock } from "@/infrastructure/system-clock";
 
 /**
  * Composition root: the only place that instantiates concrete classes.
- * Routes and server actions get services from here. See docs/architecture/composition.md.
+ * `admin.*` use the cookie session (dynamic routes); `public.*` use the cookie-less client (static routes).
+ * See docs/architecture/composition.md.
  */
 const clock: IClock = new SystemClock();
+const slugs = new SlugService();
+
+function repositories(db: Db) {
+  return {
+    notes: new SupabaseNoteRepository(db),
+    topics: new SupabaseTopicRepository(db),
+    posts: new SupabasePostRepository(db),
+    subscribers: new SupabaseSubscriberRepository(db),
+  };
+}
+
+const noteService = (db: Db) => {
+  const { notes } = repositories(db);
+  return new NoteService(notes, notes, slugs, clock);
+};
+const topicService = (db: Db) => {
+  const { topics } = repositories(db);
+  return new TopicService(topics, topics, slugs);
+};
+const subscriberService = (db: Db) => {
+  const { subscribers } = repositories(db);
+  return new SubscriberService(subscribers, subscribers);
+};
 
 export const container = {
-  clock: () => clock,
+  auth: async () => new SupabaseAuthGateway(await createSupabaseServerClient()),
+
+  admin: {
+    notes: async () => noteService(await createSupabaseServerClient()),
+    topics: async () => topicService(await createSupabaseServerClient()),
+    subscribers: async () => subscriberService(await createSupabaseServerClient()),
+    posts: async () => {
+      const { posts } = repositories(await createSupabaseServerClient());
+      return new PostService(posts, posts);
+    },
+    dashboard: async () => {
+      const r = repositories(await createSupabaseServerClient());
+      return new DashboardService(r.notes, r.posts, r.subscribers, clock, getEnv().SITE_TIMEZONE);
+    },
+  },
+
+  public: {
+    notes: () => noteService(createSupabasePublicClient()),
+    topics: () => topicService(createSupabasePublicClient()),
+    subscribers: () => subscriberService(createSupabasePublicClient()),
+  },
 };
