@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { z } from "zod";
+import { DraftStudio } from "@/components/draft-studio";
 import { NoteActions } from "@/components/note-actions";
 import { NoteEditor } from "@/components/note-editor";
 import { Badge } from "@/components/ui/badge";
@@ -8,13 +9,17 @@ import { requireAdminPage } from "../../../_lib/auth";
 
 export const metadata = { title: "Edit note" };
 
+// Draft generation (a server action on this page) can take a while on the free tier.
+export const maxDuration = 60;
+
 export default async function EditNotePage({ params }: PageProps<"/admin/notes/[id]">) {
   await requireAdminPage();
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
-  const [note, topics] = await Promise.all([
+  const [note, topics, posts] = await Promise.all([
     (await container.admin.notes()).get(id),
     (await container.admin.topics()).list(),
+    (await container.admin.posts()).listForNote(id),
   ]);
   if (!note.ok) notFound();
 
@@ -30,6 +35,7 @@ export default async function EditNotePage({ params }: PageProps<"/admin/notes/[
         <NoteActions note={note.value} />
       </div>
       <NoteEditor note={note.value} topics={topics} />
+      <DraftStudio noteId={note.value.id} initialPosts={posts} />
     </div>
   );
 }
