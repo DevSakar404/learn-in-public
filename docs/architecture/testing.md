@@ -24,6 +24,15 @@ Tests sit next to the code (`*.test.ts`). Shared fakes live in `test/fakes/`, co
 
 `test/contracts/note-repository.contract.ts` exports `runNoteRepositoryContract(make)`. It always runs against the in-memory repos. `pnpm test:db` also runs it against local Supabase (secret key, test-only), cleaning up after itself. If a fake and the real repo disagree, the contract fails.
 
+## Integration tests against local Supabase (`pnpm test:db`)
+
+Unit tests use fakes, so they can't see `supabase/config.toml`, RLS or the auth server. `test/contracts/` covers that:
+
+- `note-repository.test.ts`: the repository contract (above).
+- `auth.test.ts`: real sign-in through `SupabaseAuthGateway` (admin OK, wrong password, non-admin rejected) and sign-ups disabled. Added after `[auth.email] enable_signup = false` silently disabled email logins; with that config, 3 of its tests fail.
+
+Run `pnpm test:db` whenever you touch migrations, RLS, `supabase/config.toml` or anything in `src/infrastructure/`.
+
 ## Style
 
 Assert on behaviour and `Result` values, not on implementation details. No snapshot tests of LLM output. Test the schemas and the error mapping instead.

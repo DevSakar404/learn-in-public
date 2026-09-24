@@ -24,7 +24,7 @@ Product and feature list: [docs/00-overview.md](docs/00-overview.md).
 | Checks (must pass every phase) | `pnpm lint && pnpm typecheck && pnpm test`                                              |
 | Format                         | `pnpm format`                                                                           |
 | Seed / reset admin             | `pnpm seed:admin` (reads `.env.local`, idempotent)                                      |
-| Repo contract vs local DB      | `pnpm test:db` (needs `supabase start`)                                                 |
+| Integration tests vs local DB  | `pnpm test:db` (needs `supabase start`; run after DB/auth/config changes)               |
 | Local DB                       | `supabase start` / `supabase stop` / `supabase db reset`                                |
 | DB types                       | `supabase gen types typescript --local > src/infrastructure/supabase/database.types.ts` |
 
