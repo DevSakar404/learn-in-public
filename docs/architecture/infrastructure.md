@@ -14,7 +14,7 @@ infrastructure/
            public-client.ts   cookie-less publishable-key client (public pages, so they stay static)
            database.types.ts  generated; never edit by hand
   repositories/               Supabase<Name>Repository · mappers.ts (row ↔ entity) · db-errors.ts (PG codes → domain errors)
-  ai/                         MastraContentGenerator · model-provider.ts (LLM_PROVIDER → model) · error-mapping.ts
+  ai/                         MastraContentGenerator · model-provider.ts (LLM_PROVIDER → model, timeout, sequential for ollama) · error-mapping.ts
   auth/                       SupabaseAuthGateway · is-admin.ts · proxy-session.ts (used by src/proxy.ts)
   system-clock.ts
 ```

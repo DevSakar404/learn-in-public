@@ -33,4 +33,14 @@ describe("envSchema", () => {
       envSchema.safeParse({ ...valid, LLM_PROVIDER: "openai", OPENAI_API_KEY: "k" }).success,
     ).toBe(true);
   });
+
+  it("needs no API key for local ollama and defaults its URL", () => {
+    const env = envSchema.parse({
+      ...valid,
+      GOOGLE_GENERATIVE_AI_API_KEY: undefined,
+      LLM_PROVIDER: "ollama",
+      LLM_MODEL: "qwen2.5-coder:7b",
+    });
+    expect(env.OLLAMA_URL).toBe("http://localhost:11434/v1");
+  });
 });

@@ -8,8 +8,7 @@ import { GenerationError } from "@/domain/shared/errors";
 import { err, ok, type Result } from "@/domain/shared/result";
 import { z } from "zod";
 import { toGenerationError } from "./error-mapping";
-
-const TIMEOUT_MS = 25_000; // per call; a repair retry can make two calls, which must fit the 60s action budget
+import type { GeneratorConfig } from "./model-provider";
 
 function safeJson(text: string): unknown {
   try {
@@ -33,9 +32,21 @@ Return the complete corrected answer. Fix every problem listed and keep everythi
 
 /** The only place in the app that talks to Mastra. */
 export class MastraContentGenerator implements IContentGenerator {
-  constructor(private readonly model: { id: `${string}/${string}`; apiKey: string }) {}
+  /** Tail of the request queue when `sequential` (shared by all callers of this instance). */
+  private queue: Promise<unknown> = Promise.resolve();
 
-  async generate<T>(
+  constructor(private readonly config: GeneratorConfig) {}
+
+  generate<T>(
+    request: GenerationRequest<T>,
+  ): Promise<Result<GenerationOutput<T>, GenerationError>> {
+    if (!this.config.sequential) return this.run(request);
+    const next = this.queue.then(() => this.run(request)); // run() never rejects
+    this.queue = next;
+    return next;
+  }
+
+  private async run<T>(
     request: GenerationRequest<T>,
   ): Promise<Result<GenerationOutput<T>, GenerationError>> {
     // Stateless, one-shot: the platform instructions are the agent's instructions (stable prefix → prompt caching).
@@ -43,15 +54,19 @@ export class MastraContentGenerator implements IContentGenerator {
       id: "content-drafter",
       name: "Content drafter",
       instructions: request.system,
-      model: this.model,
+      model: this.config.model,
     });
     const started = Date.now();
     const call = (prompt: string) =>
       agent.generate(prompt, {
         structuredOutput: { schema: request.schema, errorStrategy: "warn" },
         maxSteps: 1,
-        abortSignal: AbortSignal.timeout(TIMEOUT_MS),
-        modelSettings: { temperature: 0.7, maxRetries: 0, timeout: { totalMs: TIMEOUT_MS } },
+        abortSignal: AbortSignal.timeout(this.config.timeoutMs),
+        modelSettings: {
+          temperature: 0.7,
+          maxRetries: 0,
+          timeout: { totalMs: this.config.timeoutMs },
+        },
       });
 
     try {
@@ -64,7 +79,7 @@ export class MastraContentGenerator implements IContentGenerator {
       // One repair attempt: tell the model exactly what failed. Small models sometimes miss a count or a limit.
       if (!parsed.success) {
         console.warn("[ai] invalid output, repairing once", {
-          model: this.model.id,
+          model: this.config.label,
           issues: parsed.error.issues,
         });
         result = await call(
@@ -76,7 +91,7 @@ export class MastraContentGenerator implements IContentGenerator {
       }
       if (!parsed.success) {
         console.error("[ai] invalid output", {
-          model: this.model.id,
+          model: this.config.label,
           issues: parsed.error.issues,
           raw: result.text,
         });
@@ -90,12 +105,12 @@ export class MastraContentGenerator implements IContentGenerator {
 
       return ok({
         content: parsed.data,
-        modelUsed: result.response?.modelId ?? this.model.id,
+        modelUsed: result.response?.modelId ?? this.config.label,
         usage: { inputTokens, outputTokens, latencyMs: Date.now() - started },
       });
     } catch (error) {
       const mapped = toGenerationError(error);
-      console.error(`[ai] ${mapped.kind}`, { model: this.model.id, error });
+      console.error(`[ai] ${mapped.kind}`, { model: this.config.label, error });
       return err(mapped);
     }
   }

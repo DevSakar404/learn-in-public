@@ -16,15 +16,18 @@ const schema = z
     SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
     SITE_URL: z.url(),
     SITE_TIMEZONE: z.string().refine(isTimeZone, "must be an IANA time zone, e.g. Asia/Kolkata"),
-    LLM_PROVIDER: z.enum(["google", "openai"]).default("google"),
+    LLM_PROVIDER: z.enum(["google", "openai", "ollama"]).default("google"),
     LLM_MODEL: z
       .string()
       .min(1)
       .refine((m) => !m.includes("latest"), "pin an exact model version, not *-latest"),
     GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1).optional(),
     OPENAI_API_KEY: z.string().min(1).optional(),
+    /** Local Ollama, OpenAI-compatible endpoint. Only used when LLM_PROVIDER=ollama. */
+    OLLAMA_URL: z.url().default("http://localhost:11434/v1"),
   })
   .superRefine((env, ctx) => {
+    if (env.LLM_PROVIDER === "ollama") return; // local, no key
     const key = env.LLM_PROVIDER === "google" ? "GOOGLE_GENERATIVE_AI_API_KEY" : "OPENAI_API_KEY";
     if (!env[key])
       ctx.addIssue({

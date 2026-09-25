@@ -9,7 +9,7 @@ import { SubscriberService } from "@/application/subscriber-service";
 import { TopicService } from "@/application/topic-service";
 import type { IClock } from "@/domain/clock";
 import { MastraContentGenerator } from "@/infrastructure/ai/mastra-content-generator";
-import { modelConfig } from "@/infrastructure/ai/model-provider";
+import { generatorConfig } from "@/infrastructure/ai/model-provider";
 import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
 import { getEnv } from "@/infrastructure/config/env";
 import { SupabaseNoteRepository } from "@/infrastructure/repositories/supabase-note-repository";
@@ -29,7 +29,8 @@ const clock: IClock = new SystemClock();
 const slugs = new SlugService();
 const strategies = defaultStrategies();
 let generator: MastraContentGenerator | undefined;
-const contentGenerator = () => (generator ??= new MastraContentGenerator(modelConfig(getEnv())));
+const contentGenerator = () =>
+  (generator ??= new MastraContentGenerator(generatorConfig(getEnv())));
 
 function repositories(db: Db) {
   return {
