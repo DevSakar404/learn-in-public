@@ -14,12 +14,15 @@ export interface PostPatch {
   content?: unknown;
   status?: PostStatus;
   postedUrl?: string | null;
+  postedAt?: Date | null;
 }
 
 export interface IPostReader {
   listByNote(noteId: string): Promise<AnyPost[]>;
   findById(id: string): Promise<Result<AnyPost>>;
   countByStatus(): Promise<Record<PostStatus, number>>;
+  /** Drafts marked posted at or after `since`. */
+  listPostedSince(since: Date): Promise<AnyPost[]>;
 }
 
 export interface IPostWriter {

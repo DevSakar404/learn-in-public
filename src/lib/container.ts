@@ -3,6 +3,7 @@ import { ContentGenerationService } from "@/application/content-generation-servi
 import { defaultStrategies } from "@/application/content/strategies/registry";
 import { DashboardService } from "@/application/dashboard-service";
 import { NoteService } from "@/application/note-service";
+import { PlannerService } from "@/application/planner/planner-service";
 import { PostService } from "@/application/post-service";
 import { SlugService } from "@/application/slug-service";
 import { SubscriberService } from "@/application/subscriber-service";
@@ -12,6 +13,7 @@ import { MastraContentGenerator } from "@/infrastructure/ai/mastra-content-gener
 import { generatorConfig } from "@/infrastructure/ai/model-provider";
 import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
 import { getEnv } from "@/infrastructure/config/env";
+import { SupabasePlannerSettingsRepository } from "@/infrastructure/repositories/supabase-planner-settings-repository";
 import { SupabaseNoteRepository } from "@/infrastructure/repositories/supabase-note-repository";
 import { SupabasePostRepository } from "@/infrastructure/repositories/supabase-post-repository";
 import { SupabaseSubscriberRepository } from "@/infrastructure/repositories/supabase-subscriber-repository";
@@ -19,6 +21,7 @@ import { SupabaseTopicRepository } from "@/infrastructure/repositories/supabase-
 import { createSupabasePublicClient } from "@/infrastructure/supabase/public-client";
 import { createSupabaseServerClient, type Db } from "@/infrastructure/supabase/server-client";
 import { SystemClock } from "@/infrastructure/system-clock";
+import { SITE_NAME } from "./site";
 
 /**
  * Composition root: the only place that instantiates concrete classes.
@@ -49,6 +52,16 @@ const topicService = (db: Db) => {
   const { topics } = repositories(db);
   return new TopicService(topics, topics, slugs);
 };
+const plannerService = (db: Db) => {
+  const { notes, posts } = repositories(db);
+  const settings = new SupabasePlannerSettingsRepository(db);
+  const env = getEnv();
+  return new PlannerService(notes, posts, settings, settings, clock, {
+    timeZone: env.SITE_TIMEZONE,
+    siteName: SITE_NAME,
+    siteUrl: env.SITE_URL,
+  });
+};
 const subscriberService = (db: Db) => {
   const { subscribers } = repositories(db);
   return new SubscriberService(subscribers, subscribers);
@@ -65,7 +78,7 @@ export const container = {
     subscribers: async () => subscriberService(await createSupabaseServerClient()),
     posts: async () => {
       const { posts } = repositories(await createSupabaseServerClient());
-      return new PostService(posts, posts);
+      return new PostService(posts, posts, clock);
     },
     generation: async () => {
       const r = repositories(await createSupabaseServerClient());
@@ -77,6 +90,10 @@ export const container = {
         strategies,
       );
     },
+    planner: async () => {
+      const db = await createSupabaseServerClient();
+      return plannerService(db);
+    },
     dashboard: async () => {
       const r = repositories(await createSupabaseServerClient());
       return new DashboardService(r.notes, r.posts, r.subscribers, clock, getEnv().SITE_TIMEZONE);
@@ -87,5 +104,7 @@ export const container = {
     notes: () => noteService(createSupabasePublicClient()),
     topics: () => topicService(createSupabasePublicClient()),
     subscribers: () => subscriberService(createSupabasePublicClient()),
+    /** Only calendarFeed() works here: the anonymous client can reach the schedule via the token only. */
+    planner: () => plannerService(createSupabasePublicClient()),
   },
 };

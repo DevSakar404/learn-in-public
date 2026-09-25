@@ -1,3 +1,4 @@
+import type { IClock } from "@/domain/clock";
 import { z } from "zod";
 import { platformContentSchemas, POST_STATUSES, type AnyPost } from "@/domain/post/post";
 import type { IPostReader, IPostWriter, PostPatch } from "@/domain/post/post-repository";
@@ -20,6 +21,7 @@ export class PostService {
   constructor(
     private readonly reader: IPostReader,
     private readonly writer: IPostWriter,
+    private readonly clock: IClock,
   ) {}
 
   get(id: string): Promise<Result<AnyPost>> {
@@ -36,6 +38,10 @@ export class PostService {
     if (!found.ok) return found;
 
     const patch: PostPatch = { status: update.status, postedUrl: update.postedUrl };
+    // The planner needs *when* something was posted: stamp it on the transition, clear it on the way back.
+    if (update.status === "posted" && found.value.status !== "posted")
+      patch.postedAt = this.clock.now();
+    if (update.status && update.status !== "posted") patch.postedAt = null;
     if (update.content !== undefined) {
       const parsed = platformContentSchemas[found.value.platform].safeParse(update.content);
       if (!parsed.success) {

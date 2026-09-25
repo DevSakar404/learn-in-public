@@ -1,4 +1,9 @@
 import type { Note } from "@/domain/note/note";
+import type { PlannerSchedule, PlannerSettings } from "@/domain/planner/planner-settings";
+import type {
+  IPlannerSettingsReader,
+  IPlannerSettingsWriter,
+} from "@/domain/planner/planner-settings-repository";
 import type {
   INoteReader,
   INoteWriter,
@@ -26,6 +31,13 @@ export class InMemoryStore {
   notes = new Map<string, NoteRow>();
   posts = new Map<string, AnyPost>();
   subscribers = new Map<string, Subscriber>();
+  planner: PlannerSettings = {
+    dailyTime: "20:00",
+    youtubeWeekday: 0,
+    reminderMinutes: 30,
+    journeyStart: "2026-03-01",
+    calendarToken: crypto.randomUUID(),
+  };
   private tick = 0;
 
   /** Strictly increasing timestamps so ordering is deterministic. */
@@ -154,6 +166,9 @@ export class InMemoryPostRepository implements IPostReader, IPostWriter {
     for (const p of this.db.posts.values()) counts[p.status]++;
     return counts;
   }
+  async listPostedSince(since: Date) {
+    return [...this.db.posts.values()].filter((p) => p.postedAt && p.postedAt >= since);
+  }
   async upsertDraft(data: DraftData): Promise<Result<AnyPost>> {
     if (!this.db.notes.has(data.noteId)) return err(new ValidationError("Note does not exist"));
     const existing = [...this.db.posts.values()].find(
@@ -165,6 +180,7 @@ export class InMemoryPostRepository implements IPostReader, IPostWriter {
       ...data,
       status: "draft",
       postedUrl: null,
+      postedAt: null,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
     } as AnyPost;
@@ -201,5 +217,28 @@ export class InMemorySubscriberRepository implements ISubscriberReader, ISubscri
     };
     this.db.subscribers.set(s.id, s);
     return ok(undefined);
+  }
+}
+
+export class InMemoryPlannerSettingsRepository
+  implements IPlannerSettingsReader, IPlannerSettingsWriter
+{
+  constructor(private readonly db: InMemoryStore) {}
+
+  async get() {
+    return this.db.planner;
+  }
+  async scheduleForToken(token: string): Promise<Result<PlannerSchedule>> {
+    if (token !== this.db.planner.calendarToken) return err(new NotFoundError("Calendar", token));
+    const { dailyTime, youtubeWeekday, reminderMinutes, journeyStart } = this.db.planner;
+    return ok({ dailyTime, youtubeWeekday, reminderMinutes, journeyStart });
+  }
+  async update(schedule: PlannerSchedule): Promise<Result<PlannerSettings>> {
+    this.db.planner = { ...this.db.planner, ...schedule };
+    return ok(this.db.planner);
+  }
+  async rotateToken(): Promise<Result<PlannerSettings>> {
+    this.db.planner = { ...this.db.planner, calendarToken: crypto.randomUUID() };
+    return ok(this.db.planner);
   }
 }

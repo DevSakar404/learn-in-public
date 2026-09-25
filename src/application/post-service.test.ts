@@ -20,6 +20,17 @@ describe("PostService", () => {
     });
     expect(posted.ok && posted.value.status).toBe("posted");
     expect(posted.ok && posted.value.postedUrl).toBe("https://x.com/me/status/1");
+    expect(posted.ok && posted.value.postedAt).toEqual(t.clock.now());
+  });
+
+  it("keeps the first posted time, and clears it when moved back to draft", async () => {
+    const { t, post } = await withDraft();
+    await t.posts.update(post.id, { status: "posted" });
+    t.clock.current = new Date("2026-04-01T00:00:00Z");
+    const again = await t.posts.update(post.id, { status: "posted" });
+    expect(again.ok && again.value.postedAt).toEqual(new Date("2026-03-10T12:00:00Z"));
+    const back = await t.posts.update(post.id, { status: "draft" });
+    expect(back.ok && back.value.postedAt).toBeNull();
   });
 
   it("saves edited content that fits the platform schema", async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { learningStreak } from "./streak";
+import { learningStreak, longestStreak } from "./streak";
 
 const TZ = "Asia/Kolkata"; // UTC+5:30
 const at = (iso: string) => new Date(iso);
@@ -42,5 +42,18 @@ describe("learningStreak", () => {
     const lateUtc = [at("2026-03-09T19:00:00Z")];
     expect(learningStreak(lateUtc, now, TZ)).toBe(1);
     expect(learningStreak(lateUtc, at("2026-03-11T12:00:00Z"), "UTC")).toBe(0);
+  });
+});
+
+describe("longestStreak", () => {
+  it("finds the longest run anywhere in history", () => {
+    const dates = ["2026-03-01", "2026-03-02", "2026-03-03", "2026-03-05", "2026-03-06"].map((d) =>
+      at(`${d}T05:00:00Z`),
+    );
+    expect(longestStreak(dates, TZ)).toBe(3);
+  });
+
+  it("is 0 with no notes", () => {
+    expect(longestStreak([], TZ)).toBe(0);
   });
 });

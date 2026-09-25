@@ -32,6 +32,14 @@ export class SupabasePostRepository implements IPostReader, IPostWriter {
     return counts;
   }
 
+  async listPostedSince(since: Date): Promise<AnyPost[]> {
+    const rows = rowsOrThrow(
+      await this.db.from("posts").select().gte("posted_at", since.toISOString()),
+      "List posted drafts",
+    );
+    return rows.map(toPost);
+  }
+
   async upsertDraft<P extends Platform>(data: DraftData<P>): Promise<Result<AnyPost>> {
     const { data: row, error } = await this.db
       .from("posts")
@@ -45,6 +53,7 @@ export class SupabasePostRepository implements IPostReader, IPostWriter {
           usage: { ...data.usage },
           status: "draft",
           posted_url: null,
+          posted_at: null,
         },
         { onConflict: "note_id,platform" },
       )
@@ -58,6 +67,7 @@ export class SupabasePostRepository implements IPostReader, IPostWriter {
       content: patch.content as Json | undefined,
       status: patch.status,
       posted_url: patch.postedUrl,
+      posted_at: patch.postedAt === undefined ? undefined : (patch.postedAt?.toISOString() ?? null),
     };
     const { data, error } = await this.db
       .from("posts")

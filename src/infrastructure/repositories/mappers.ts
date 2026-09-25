@@ -45,6 +45,7 @@ export function toPost(r: Tables<"posts">): AnyPost {
     content: parsed.data,
     status: r.status,
     postedUrl: r.posted_url,
+    postedAt: r.posted_at ? new Date(r.posted_at) : null,
     modelUsed: r.model_used,
     promptVersion: r.prompt_version,
     usage: (r.usage as GenerationUsage | null) ?? null,

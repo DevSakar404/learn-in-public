@@ -82,6 +82,8 @@ export interface Post<P extends Platform = Platform> {
   content: PlatformContent[P];
   status: PostStatus;
   postedUrl: string | null;
+  /** When the draft was marked posted; null otherwise. */
+  postedAt: Date | null;
   modelUsed: string;
   promptVersion: string;
   usage: GenerationUsage | null;

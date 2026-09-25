@@ -2,6 +2,7 @@ import { ContentGenerationService } from "@/application/content-generation-servi
 import { defaultStrategies } from "@/application/content/strategies/registry";
 import { DashboardService } from "@/application/dashboard-service";
 import { NoteService, type NoteInput } from "@/application/note-service";
+import { PlannerService } from "@/application/planner/planner-service";
 import { PostService } from "@/application/post-service";
 import { SlugService } from "@/application/slug-service";
 import { SubscriberService } from "@/application/subscriber-service";
@@ -10,6 +11,7 @@ import { FakeContentGenerator } from "./fake-content-generator";
 import { FixedClock } from "./fixed-clock";
 import {
   InMemoryNoteRepository,
+  InMemoryPlannerSettingsRepository,
   InMemoryPostRepository,
   InMemoryStore,
   InMemorySubscriberRepository,
@@ -26,6 +28,7 @@ export function setup(now = new Date("2026-03-10T12:00:00Z")) {
   const noteRepo = new InMemoryNoteRepository(store);
   const postRepo = new InMemoryPostRepository(store);
   const subscriberRepo = new InMemorySubscriberRepository(store);
+  const plannerRepo = new InMemoryPlannerSettingsRepository(store);
   const generator = new FakeContentGenerator((req) => sampleFor(req.system));
 
   const topics = new TopicService(topicRepo, topicRepo, slugs);
@@ -37,7 +40,12 @@ export function setup(now = new Date("2026-03-10T12:00:00Z")) {
     generator,
     topics,
     notes,
-    posts: new PostService(postRepo, postRepo),
+    posts: new PostService(postRepo, postRepo, clock),
+    planner: new PlannerService(noteRepo, postRepo, plannerRepo, plannerRepo, clock, {
+      timeZone: "Asia/Kolkata",
+      siteName: "Learn in Public",
+      siteUrl: "https://example.dev",
+    }),
     generation: new ContentGenerationService(
       noteRepo,
       postRepo,
