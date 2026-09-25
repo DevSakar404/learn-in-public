@@ -30,6 +30,19 @@ export function toGenerationError(error: unknown): GenerationError {
       );
     }
   }
+  for (const e of causes(error)) {
+    const message = String(e.message ?? "");
+    if (
+      e.statusCode === 503 ||
+      e.status === 503 ||
+      /high demand|overloaded|UNAVAILABLE/i.test(message)
+    ) {
+      return new GenerationError(
+        "rate_limit",
+        "The model is overloaded right now (common for the newest free models). Retry in a minute, or use a lighter LLM_MODEL.",
+      );
+    }
+  }
   const message = error instanceof Error ? error.message : "Unknown error";
   return new GenerationError("provider", `The model provider returned an error: ${message}`);
 }

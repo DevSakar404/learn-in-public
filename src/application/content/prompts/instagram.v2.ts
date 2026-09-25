@@ -1,11 +1,12 @@
 // Adapted from agency-agents `marketing-instagram-curator.md` (educational content, strong CTA) and the
 // carousel template in `marketing-linkedin-content-creator.md` (slide 1 = hook, one insight per slide).
+// v2: the slide count is fixed even for short notes (v1 conflicted with the voice rule "thin note → shorter draft").
 export const INSTAGRAM_PROMPT = {
-  version: "instagram.v1",
+  version: "instagram.v2",
   instructions: `Platform: Instagram carousel (text only; slides will be designed later).
 
 Write
-- "slides": 6 to 8 slides. Each has a "title" (max ~8 words) and a "body" (1–3 short sentences, max 220 characters).
+- "slides": always between 6 and 8 slides, never fewer, even for a short note. A short note means shorter slides, not fewer slides: split ideas more finely, give the example its own slide, and keep the hook and recap slides. Each has a "title" (max ~8 words) and a "body" (1–3 short sentences, max 220 characters).
   - Slide 1: the hook. Make a developer stop scrolling (a question, a mistake, or a surprising fact from the note).
   - Middle slides: one idea per slide, in a logical order. Use a tiny example where the note has one.
   - Last slide: a short recap plus a soft call to action (e.g. "Save this for your next RAG project").

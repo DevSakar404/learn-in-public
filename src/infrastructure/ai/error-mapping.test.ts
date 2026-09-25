@@ -16,6 +16,14 @@ describe("toGenerationError", () => {
     expect(toGenerationError(new Error("RESOURCE_EXHAUSTED: quota")).kind).toBe("rate_limit");
   });
 
+  it("maps an overloaded model (503) to a retryable rate_limit", () => {
+    const e = toGenerationError(
+      new Error("This model is currently experiencing high demand. Please try again later."),
+    );
+    expect(e.kind).toBe("rate_limit");
+    expect(e.message).toMatch(/overloaded/);
+  });
+
   it("maps anything else to provider", () => {
     const e = toGenerationError(new Error("invalid api key"));
     expect(e.kind).toBe("provider");

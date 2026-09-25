@@ -1,5 +1,5 @@
 import { platformContentSchemas } from "@/domain/post/post";
-import { INSTAGRAM_PROMPT } from "../prompts/instagram.v1";
+import { INSTAGRAM_PROMPT } from "../prompts/instagram.v2";
 import { PromptStrategy } from "./prompt-strategy";
 
 export class InstagramCarouselStrategy extends PromptStrategy<"instagram"> {

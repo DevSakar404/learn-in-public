@@ -26,7 +26,7 @@
 **Rules**
 
 - Prompts are adapted from agency-agents marketing personas. Voice: first person, learning in public, simple language, no hype, no emoji spam.
-- Platforms run in parallel (`Promise.allSettled`), each with `AbortSignal.timeout(45s)`. Each platform has its own `Result`, so a failure only affects its tab, which shows Retry.
+- Platforms run in parallel (`Promise.allSettled`), each call with `AbortSignal.timeout(25s)`. Invalid output gets one repair retry (the Zod errors are fed back to the model) before `invalid_output`. Each platform has its own `Result`, so a failure only affects its tab, which shows Retry.
 - **Never overwrite an `approved` or `posted` draft.** "Generate all" skips them. A direct regenerate returns `ConflictError`.
 - Store `model_used` (the resolved ID), `prompt_version`, `usage`. `console.error` the raw output when validation fails.
 - Only `infrastructure/ai/*` imports Mastra.
