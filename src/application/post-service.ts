@@ -22,6 +22,10 @@ export class PostService {
     private readonly writer: IPostWriter,
   ) {}
 
+  get(id: string): Promise<Result<AnyPost>> {
+    return this.reader.findById(id);
+  }
+
   listForNote(noteId: string): Promise<AnyPost[]> {
     return this.reader.listByNote(noteId);
   }

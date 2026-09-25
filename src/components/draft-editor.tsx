@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { updateDraft } from "@/app/actions/drafts";
 import { DraftContentFields } from "@/components/draft-content-fields";
 import { NativeSelect } from "@/components/native-select";
+import { SlideImages } from "@/components/slide-images";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -113,6 +114,11 @@ export function DraftEditor({ post, regenerating, onSaved, onRegenerate }: Props
           Regenerate
         </Button>
       </div>
+
+      <SlideImages
+        post={post}
+        dirty={JSON.stringify(payload.content) !== JSON.stringify(post.content)}
+      />
 
       <p className="text-xs text-muted-foreground">
         {post.modelUsed} · prompt {post.promptVersion}

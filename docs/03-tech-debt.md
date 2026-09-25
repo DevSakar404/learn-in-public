@@ -19,7 +19,7 @@ The single home for deferred work. In code, deliberate shortcuts are marked with
 | 8   | Render markdown to `content_html` at publish                                                                                                                                                                        | Removes the per-request render cost.                                    |
 | 9   | Streak and counts via a SQL view/RPC, plus pagination                                                                                                                                                               | The MVP reads rows into JS. Fine at ~100 notes.                         |
 | 10  | Rate-limit signups + Turnstile/BotID                                                                                                                                                                                | The honeypot only stops simple bots.                                    |
-| 11  | OG image generation, full-text search                                                                                                                                                                               | Social click-through and discoverability.                               |
+| 11  | Blog OG images (reuse `SlideImage` + a theme), full-text search · optional AI cover image behind an `IImageGenerator`                                                                                               | Social click-through and discoverability.                               |
 
 ## Future features (interfaces are ready)
 
