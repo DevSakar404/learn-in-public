@@ -8,12 +8,12 @@ import type { Database } from "@/infrastructure/supabase/database.types";
  * (e.g. email logins disabled, sign-ups accidentally enabled). Needs `supabase start`; run with `pnpm test:db`.
  */
 describe.runIf(process.env.SUPABASE_TEST === "1")("auth against local Supabase", () => {
-  const url = process.env.SUPABASE_URL!;
-  const admin = createClient(url, process.env.SUPABASE_SECRET_KEY!, {
-    auth: { persistSession: false },
-  });
+  // Clients are created lazily: describe bodies run at collection time even when the suite is skipped.
+  const url = () => process.env.SUPABASE_URL!;
+  const adminClient = () =>
+    createClient(url(), process.env.SUPABASE_SECRET_KEY!, { auth: { persistSession: false } });
   const anonClient = () =>
-    createClient<Database>(url, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+    createClient<Database>(url(), process.env.SUPABASE_PUBLISHABLE_KEY!, {
       auth: { persistSession: false },
     });
 
@@ -28,7 +28,7 @@ describe.runIf(process.env.SUPABASE_TEST === "1")("auth against local Supabase",
       [adminEmail, { role: "admin" }],
       [userEmail, {}],
     ] as const) {
-      const { data, error } = await admin.auth.admin.createUser({
+      const { data, error } = await adminClient().auth.admin.createUser({
         email,
         password,
         email_confirm: true,
@@ -40,7 +40,7 @@ describe.runIf(process.env.SUPABASE_TEST === "1")("auth against local Supabase",
   });
 
   afterAll(async () => {
-    for (const id of createdIds) await admin.auth.admin.deleteUser(id);
+    for (const id of createdIds) await adminClient().auth.admin.deleteUser(id);
   });
 
   it("lets the admin sign in with email + password", async () => {
