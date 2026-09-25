@@ -84,6 +84,36 @@ export type Database = {
           },
         ]
       }
+      planner_settings: {
+        Row: {
+          calendar_token: string
+          daily_time: string
+          id: boolean
+          journey_start: string
+          reminder_minutes: number
+          updated_at: string
+          youtube_weekday: number
+        }
+        Insert: {
+          calendar_token?: string
+          daily_time?: string
+          id?: boolean
+          journey_start?: string
+          reminder_minutes?: number
+          updated_at?: string
+          youtube_weekday?: number
+        }
+        Update: {
+          calendar_token?: string
+          daily_time?: string
+          id?: boolean
+          journey_start?: string
+          reminder_minutes?: number
+          updated_at?: string
+          youtube_weekday?: number
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           content: Json
@@ -92,6 +122,7 @@ export type Database = {
           model_used: string
           note_id: string
           platform: Database["public"]["Enums"]["platform"]
+          posted_at: string | null
           posted_url: string | null
           prompt_version: string
           status: Database["public"]["Enums"]["post_status"]
@@ -105,6 +136,7 @@ export type Database = {
           model_used: string
           note_id: string
           platform: Database["public"]["Enums"]["platform"]
+          posted_at?: string | null
           posted_url?: string | null
           prompt_version: string
           status?: Database["public"]["Enums"]["post_status"]
@@ -118,6 +150,7 @@ export type Database = {
           model_used?: string
           note_id?: string
           platform?: Database["public"]["Enums"]["platform"]
+          posted_at?: string | null
           posted_url?: string | null
           prompt_version?: string
           status?: Database["public"]["Enums"]["post_status"]
@@ -185,6 +218,15 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
+      planner_feed: {
+        Args: { token: string }
+        Returns: {
+          daily_time: string
+          journey_start: string
+          reminder_minutes: number
+          youtube_weekday: number
+        }[]
+      }
     }
     Enums: {
       note_status: "draft" | "published"
