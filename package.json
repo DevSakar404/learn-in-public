@@ -13,6 +13,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "seed:admin": "tsx --env-file=.env.local scripts/seed-admin.mts",
+    "seed:admin:prod": "tsx --env-file=.env.prod scripts/seed-admin.mts",
     "test:db": "SUPABASE_TEST=1 node --env-file=.env.local ./node_modules/vitest/vitest.mjs run test/contracts"
   },
   "dependencies": {
