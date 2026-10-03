@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
+import { LinkPending } from "@/components/link-pending";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { NoteCard, NoteList } from "@/components/note-card";
 import { Button } from "@/components/ui/button";
@@ -82,9 +83,10 @@ export default async function HomePage() {
               <li key={t.id}>
                 <Link
                   href={`/blog/topic/${t.slug}`}
-                  className="inline-flex h-9 items-center rounded-full border px-4 text-sm transition-colors hover:border-foreground/30 hover:bg-muted"
+                  className="relative inline-flex h-9 items-center rounded-full border px-4 text-sm transition-colors hover:border-foreground/30 hover:bg-muted"
                 >
                   {t.name}
+                  <LinkPending className="inset-x-4 bottom-1.5" />
                 </Link>
               </li>
             ))}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkPending } from "@/components/link-pending";
 import type { Note } from "@/domain/note/note";
 
 /** One row of a note list: date + topic, title, summary. The whole row is the link target. */
@@ -19,6 +20,7 @@ export function NoteCard({ note, date }: { note: Note; date: string }) {
             className="after:absolute after:inset-0 focus-visible:underline focus-visible:outline-none"
           >
             {note.title}
+            <LinkPending />
           </Link>
         </h3>
         {note.summary && (

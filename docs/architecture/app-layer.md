@@ -41,4 +41,4 @@ Public pages use the cookie-less client, so they stay static. Publish, unpublish
 
 ## Loading and errors
 
-Every route segment with data has a `loading.tsx` and an `error.tsx`. `not-found.tsx` handles unknown slugs.
+Every admin route has a `loading.tsx` skeleton built from `components/skeletons.tsx`, shaped like the real page. Public routes have one only where the page never calls `notFound()` (home, `/blog`); the note and topic routes don't, so unknown slugs still return a real `404` (see [decisions](../02-decisions.md)). Links into those use `LinkPending` (`useLinkStatus`) for click feedback. Route segments with data have an `error.tsx`; `not-found.tsx` handles unknown slugs.

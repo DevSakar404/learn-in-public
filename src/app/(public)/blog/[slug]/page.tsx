@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
+import { LinkPending } from "@/components/link-pending";
 import { Markdown } from "@/components/markdown";
 import { YouTubeEmbed } from "@/components/youtube-embed";
 import { youtubeVideoId } from "@/domain/note/youtube";
@@ -54,9 +55,10 @@ export default async function NotePage({ params }: PageProps<"/blog/[slug]">) {
           <span aria-hidden>·</span>
           <Link
             href={`/blog/topic/${n.topic.slug}`}
-            className="text-brand underline-offset-4 hover:underline"
+            className="relative text-brand underline-offset-4 hover:underline"
           >
             {n.topic.name}
+            <LinkPending className="-bottom-1" />
           </Link>
         </div>
         <h1 className="text-3xl leading-tight font-semibold tracking-tighter sm:text-5xl sm:leading-[1.1]">

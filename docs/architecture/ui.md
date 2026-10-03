@@ -19,6 +19,12 @@
 - **Sticky headers blur through a `before:` pseudo-element**, not `backdrop-blur` on the header itself: a `backdrop-filter` ancestor turns a `position: fixed` child (the tab bar) into one pinned to that ancestor.
 - **Phones:** tables hide secondary columns (`hidden sm:table-cell`) and repeat them as a muted line under the first cell. Controls use `text-base md:text-sm` so iOS doesn't zoom on focus. On touch screens, `globals.css` raises buttons and inputs to at least 40px tall.
 
+## Loading states
+
+- Skeletons: the `Skeleton` primitive (`ui/skeleton.tsx`, hand-written because the shadcn registry was unreachable) and the blocks in `skeletons.tsx`. They mirror the real components' sizes and breakpoints so nothing jumps when content arrives. Wrap a whole screen in `LoadingRegion`: it's announced once ("Loading…") and its shapes are `aria-hidden`.
+- Pulses stop under `prefers-reduced-motion`.
+- Click feedback without a skeleton: `LinkPending` inside a `<Link>`, or the pending bar built into the admin nav. Buttons that run an action show a spinner on the clicked button (`SubmitButton`, `NoteActions`).
+
 ## Forms
 
 `<form action={action}>` + `useActionState` (shows the returned `error` / `fieldErrors`) + `useFormStatus` (disables submit, shows the pending state). There's no client form library.
