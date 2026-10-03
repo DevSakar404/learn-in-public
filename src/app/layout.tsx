@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { container } from "@/lib/container";
@@ -8,6 +8,15 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+
+// Mobile browser chrome matches the page background (globals.css --background).
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fcfbf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#141210" },
+  ],
+};
 
 export function generateMetadata(): Metadata {
   return {
@@ -22,7 +31,11 @@ export function generateMetadata(): Metadata {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={cn("font-sans", geist.variable, geistMono.variable)}
+      suppressHydrationWarning
+    >
       <body className="min-h-dvh antialiased">
         <ThemeProvider>
           {children}
