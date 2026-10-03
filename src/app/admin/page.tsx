@@ -1,4 +1,9 @@
+import { PlusIcon } from "lucide-react";
+import Link from "next/link";
+import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { container } from "@/lib/container";
 import { requireAdminPage } from "../_lib/auth";
 
@@ -21,16 +26,27 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {tiles.map((t) => (
-          <Card key={t.label}>
+    <div className="space-y-8">
+      <PageHeader
+        title="Dashboard"
+        actions={
+          <Button asChild>
+            <Link href="/admin/notes/new">
+              <PlusIcon aria-hidden /> New note
+            </Link>
+          </Button>
+        }
+      />
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        {tiles.map((t, i) => (
+          <Card key={t.label} className={cn(i === 0 && "col-span-2 lg:col-span-1")}>
             <CardHeader>
               <CardDescription>{t.label}</CardDescription>
-              <CardTitle className="text-3xl tabular-nums">{t.value}</CardTitle>
+              <CardTitle className="text-3xl font-semibold tracking-tight tabular-nums">
+                {t.value}
+              </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">{t.hint}</CardContent>
+            <CardContent className="text-xs text-muted-foreground">{t.hint}</CardContent>
           </Card>
         ))}
       </div>

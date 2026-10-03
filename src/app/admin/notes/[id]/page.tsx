@@ -3,6 +3,7 @@ import { z } from "zod";
 import { DraftStudio } from "@/components/draft-studio";
 import { NoteActions } from "@/components/note-actions";
 import { NoteEditor } from "@/components/note-editor";
+import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { container } from "@/lib/container";
 import { requireAdminPage } from "../../../_lib/auth";
@@ -24,16 +25,16 @@ export default async function EditNotePage({ params }: PageProps<"/admin/notes/[
   if (!note.ok) notFound();
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">Edit note</h1>
+    <div className="space-y-10">
+      <PageHeader
+        title="Edit note"
+        badge={
           <Badge variant={note.value.status === "published" ? "default" : "outline"}>
             {note.value.status}
           </Badge>
-        </div>
-        <NoteActions note={note.value} />
-      </div>
+        }
+        actions={<NoteActions note={note.value} />}
+      />
       <NoteEditor note={note.value} topics={topics} />
       <DraftStudio noteId={note.value.id} initialPosts={posts} />
     </div>

@@ -75,17 +75,20 @@ export function DraftStudio({ noteId, initialPosts }: { noteId: string; initialP
     });
 
   return (
-    <section aria-labelledby="drafts" className="space-y-5 rounded-xl border p-4 sm:p-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 id="drafts" className="text-xl font-semibold">
+    <section
+      aria-labelledby="drafts"
+      className="space-y-6 rounded-2xl border bg-card p-4 shadow-xs sm:p-6"
+    >
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-1">
+          <h2 id="drafts" className="text-xl font-semibold tracking-tight">
             Social drafts
           </h2>
           <p className="text-sm text-muted-foreground">
             Generate drafts from this note, edit them, then copy and post by hand.
           </p>
         </div>
-        <fieldset className="flex flex-wrap items-center gap-4">
+        <fieldset className="grid grid-cols-2 items-center gap-x-4 gap-y-3 sm:flex sm:flex-wrap">
           <legend className="sr-only">Platforms to generate</legend>
           {PLATFORMS.map((p) => (
             <div key={p} className="flex items-center gap-2">
@@ -97,7 +100,11 @@ export function DraftStudio({ noteId, initialPosts }: { noteId: string; initialP
               <Label htmlFor={`gen-${p}`}>{PLATFORM_LABELS[p]}</Label>
             </div>
           ))}
-          <Button onClick={() => run([...selected])} disabled={!selected.size || running.size > 0}>
+          <Button
+            onClick={() => run([...selected])}
+            disabled={!selected.size || running.size > 0}
+            className="col-span-2 sm:col-span-1"
+          >
             {running.size ? (
               <Loader2Icon className="animate-spin" aria-hidden />
             ) : (
@@ -109,9 +116,10 @@ export function DraftStudio({ noteId, initialPosts }: { noteId: string; initialP
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Platform)}>
-        <TabsList className="flex-wrap">
+        {/* Phones: a 2×2 grid, so every platform and its status stays visible. */}
+        <TabsList className="max-sm:grid max-sm:h-auto max-sm:w-full max-sm:grid-cols-2">
           {PLATFORMS.map((p) => (
-            <TabsTrigger key={p} value={p} className="gap-2">
+            <TabsTrigger key={p} value={p} className="gap-2 max-sm:py-1.5">
               {PLATFORM_LABELS[p]}
               {running.has(p) ? (
                 <Loader2Icon className="size-3 animate-spin" aria-label="generating" />

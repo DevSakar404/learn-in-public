@@ -1,7 +1,8 @@
+import { LogOutIcon } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { AdminNav } from "@/components/admin-nav";
+import { BrandMark } from "@/components/brand-mark";
 import { SubmitButton } from "@/components/submit-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { requireAdminPage } from "../_lib/auth";
@@ -16,26 +17,39 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="min-h-dvh">
-      <header className="border-b">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-3">
-          <div className="flex flex-wrap items-center gap-4">
-            <Link href="/" className="font-semibold">
-              Learn in Public
-            </Link>
-            <AdminNav />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="hidden text-sm text-muted-foreground sm:inline">{admin.email}</span>
+      {/* The blur sits on a pseudo-element: backdrop-filter on the header itself would pin the
+          phone tab bar (position: fixed, inside AdminNav) to the header instead of the viewport. */}
+      <header className="sticky top-0 z-40 border-b border-border/60 before:absolute before:inset-0 before:-z-10 before:bg-background/80 before:backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4 sm:px-6">
+          <BrandMark className="shrink-0">
+            <span className="font-mono text-xs font-normal tracking-widest text-muted-foreground uppercase">
+              Admin
+            </span>
+          </BrandMark>
+          <AdminNav />
+          <div className="ml-auto flex items-center gap-1">
+            <span className="mr-2 hidden text-sm text-muted-foreground lg:inline">
+              {admin.email}
+            </span>
             <ThemeToggle />
             <form action={logout}>
-              <SubmitButton variant="outline" size="sm" pendingText="Logging out…">
-                Log out
+              <SubmitButton
+                variant="ghost"
+                aria-label="Log out"
+                className="max-sm:w-10 max-sm:px-0"
+                pendingText="…"
+              >
+                <LogOutIcon aria-hidden />
+                <span className="hidden sm:inline">Log out</span>
               </SubmitButton>
             </form>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+      {/* Bottom padding keeps content clear of the phone tab bar. */}
+      <main className="mx-auto max-w-6xl px-4 pt-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 md:pb-12">
+        {children}
+      </main>
     </div>
   );
 }

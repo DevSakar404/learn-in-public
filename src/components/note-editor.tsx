@@ -6,6 +6,7 @@ import { FieldError, FormMessage } from "@/components/form-message";
 import { Markdown } from "@/components/markdown";
 import { NativeSelect } from "@/components/native-select";
 import { SubmitButton } from "@/components/submit-button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -76,14 +77,16 @@ export function NoteEditor({ note, topics }: { note?: Note; topics: Topic[] }) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="contentMd">Content (markdown)</Label>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => setShowPreview((p) => !p)}
-            className="rounded px-2 py-1 text-sm underline-offset-4 hover:underline lg:hidden"
+            className="lg:hidden"
             aria-expanded={showPreview}
           >
             {showPreview ? "Edit" : "Preview"}
-          </button>
+          </Button>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
           <Textarea
@@ -95,7 +98,7 @@ export function NoteEditor({ note, topics }: { note?: Note; topics: Topic[] }) {
           <section
             aria-label="Preview"
             className={cn(
-              "min-h-40 overflow-auto rounded-md border p-4",
+              "min-h-40 overflow-auto rounded-lg border bg-card p-4 sm:p-6",
               !showPreview && "hidden lg:block",
             )}
           >
@@ -109,8 +112,11 @@ export function NoteEditor({ note, topics }: { note?: Note; topics: Topic[] }) {
         <FieldError id="contentMd-error" errors={errors.contentMd} />
       </div>
 
-      <div className="flex items-center gap-4">
-        <SubmitButton pendingText="Saving…">{note ? "Save changes" : "Create draft"}</SubmitButton>
+      {/* Phones: the save bar sticks above the tab bar so it's reachable from a long note. */}
+      <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 -mx-4 flex items-center gap-4 border-t bg-background/90 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6 md:static md:mx-0 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+        <SubmitButton pendingText="Saving…" className="max-md:flex-1">
+          {note ? "Save changes" : "Create draft"}
+        </SubmitButton>
         {state.fieldErrors && <FormMessage state={state} />}
       </div>
     </form>
