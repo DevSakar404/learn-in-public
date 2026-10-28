@@ -57,7 +57,16 @@ export default async function NotePage({ params }: PageProps<"/blog/[slug]">) {
         {n.summary && <p className="text-lg text-muted-foreground">{n.summary}</p>}
       </header>
       {videoId && <YouTubeEmbed videoId={videoId} title={n.title} />}
-      <Markdown>{body}</Markdown>
+      <Markdown
+        className={
+          // Lesson posts: **bold** keywords get a soft highlight.
+          hasLesson(playground)
+            ? "prose-strong:rounded prose-strong:bg-ember-soft prose-strong:px-1 prose-strong:text-ember-text"
+            : undefined
+        }
+      >
+        {body}
+      </Markdown>
       {hasLesson(playground) && <PlaygroundCta href={`/blog/${n.slug}/playground`} />}
     </article>
   );
