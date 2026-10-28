@@ -66,6 +66,7 @@ export function setup(now = new Date("2026-03-10T12:00:00Z")) {
         contentMd: "# Tokens\n\nThey are not words.",
         topicId: topic.value.id,
         videoUrl: null,
+        sessionMinutes: null,
         ...overrides,
       });
       if (!note.ok) throw note.error;

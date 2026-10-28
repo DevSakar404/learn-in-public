@@ -18,6 +18,17 @@ export const noteInputSchema = z.object({
     .default("")
     .refine((v) => v === "" || youtubeVideoId(v) !== null, "Must be a YouTube link")
     .transform((v) => v || null),
+  // Blank → null (the page falls back to reading time).
+  sessionMinutes: z
+    .union([
+      z.literal("").transform(() => null),
+      z.coerce
+        .number("Use a number of minutes")
+        .int("Use whole minutes")
+        .min(5, "At least 5 minutes")
+        .max(240, "At most 240 minutes"),
+    ])
+    .default(null),
 });
 export type NoteInput = z.output<typeof noteInputSchema>;
 

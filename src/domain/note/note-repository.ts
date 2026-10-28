@@ -14,6 +14,7 @@ export interface NewNote {
   contentMd: string;
   topicId: string;
   videoUrl: string | null;
+  sessionMinutes: number | null;
 }
 
 export type NotePatch = Partial<Omit<NewNote, "slug">> & {

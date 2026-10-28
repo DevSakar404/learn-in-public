@@ -35,6 +35,7 @@ export function runNoteRepositoryContract(make: () => Promise<ContractRepos>) {
       contentMd: "# hi",
       topicId: topic.value.id,
       videoUrl: null,
+      sessionMinutes: null,
     });
     if (!note.ok) throw note.error;
     track.noteIds.push(note.value.id);
@@ -75,6 +76,7 @@ export function runNoteRepositoryContract(make: () => Promise<ContractRepos>) {
       contentMd: "",
       topicId: crypto.randomUUID(),
       videoUrl: null,
+      sessionMinutes: null,
     });
     expect(!r.ok && r.error.code).toBe("VALIDATION");
   });

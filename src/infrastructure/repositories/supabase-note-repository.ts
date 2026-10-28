@@ -63,6 +63,7 @@ export class SupabaseNoteRepository implements INoteReader, INoteWriter {
         content_md: data.contentMd,
         topic_id: data.topicId,
         video_url: data.videoUrl,
+        session_minutes: data.sessionMinutes,
       })
       .select(NOTE_SELECT)
       .single();
@@ -76,6 +77,7 @@ export class SupabaseNoteRepository implements INoteReader, INoteWriter {
       content_md: patch.contentMd,
       topic_id: patch.topicId,
       video_url: patch.videoUrl,
+      session_minutes: patch.sessionMinutes,
       status: patch.status,
       published_at:
         patch.publishedAt === undefined ? undefined : (patch.publishedAt?.toISOString() ?? null),

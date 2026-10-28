@@ -54,6 +54,7 @@ describe("NoteService", () => {
       contentMd: "",
       topicId: topic.id,
       videoUrl: null,
+      sessionMinutes: null,
     });
     if (!b.ok) throw b.error;
     await t.notes.publish(a.id);
@@ -86,6 +87,14 @@ describe("noteInputSchema", () => {
 
   it("normalises an empty video URL to null", () => {
     expect(noteInputSchema.parse({ ...base, videoUrl: "" }).videoUrl).toBeNull();
+  });
+
+  it("parses session minutes: blank is null, 5–240 whole minutes only", () => {
+    const minutes = (v: string) => noteInputSchema.safeParse({ ...base, sessionMinutes: v });
+    expect(noteInputSchema.parse(base).sessionMinutes).toBeNull();
+    expect(minutes("").data?.sessionMinutes).toBeNull();
+    expect(minutes("12").data?.sessionMinutes).toBe(12);
+    for (const bad of ["4", "241", "7.5", "ten"]) expect(minutes(bad).success).toBe(false);
   });
 
   it("accepts YouTube links and rejects others", () => {

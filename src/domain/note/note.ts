@@ -11,6 +11,8 @@ export interface Note {
   contentMd: string;
   topic: TopicRef;
   videoUrl: string | null;
+  /** Minutes for one focused session (reading + playground + exercises). Null → reading time. */
+  sessionMinutes: number | null;
   status: NoteStatus;
   publishedAt: Date | null;
   createdAt: Date;
