@@ -48,6 +48,16 @@ export class NoteService {
     return this.reader.list({ ...filter, status: "published" });
   }
 
+  /** The next published note in the same topic (oldest first), or null after the last one. */
+  async nextInTopic(note: Note): Promise<Note | null> {
+    const at = note.publishedAt?.getTime();
+    if (at === undefined) return null;
+    const later = (await this.listPublished({ topicId: note.topic.id })).filter(
+      (n) => (n.publishedAt?.getTime() ?? 0) > at,
+    );
+    return later.at(-1) ?? null; // the list is newest first
+  }
+
   get(id: string): Promise<Result<Note>> {
     return this.reader.findById(id);
   }
