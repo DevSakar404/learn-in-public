@@ -46,6 +46,16 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --font-display: var(--font-outfit);
+  --color-ember: var(--ember);
+  --color-ember-strong: var(--ember-strong);
+  --color-ember-ink: var(--ember-ink);
+  --color-ember-surface: var(--ember-surface);
+  --color-ember-line: var(--ember-line);
+  --color-ember-soft: var(--ember-soft);
+  --color-ember-text: var(--ember-text);
+  --color-ember-ok: var(--ember-ok);
+  --color-ember-danger: var(--ember-danger);
 }
 
 :root {
@@ -81,6 +91,16 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Ember (from bamboo harness), used by lesson playgrounds */
+  --ember: #fa6400;
+  --ember-strong: #e65100;
+  --ember-ink: #0c0020;
+  --ember-surface: #fff1e7;
+  --ember-line: #f0e2d7;
+  --ember-soft: #ffede1;
+  --ember-text: #c24800;
+  --ember-ok: #17845a;
+  --ember-danger: #d92d20;
 }
 
 .dark {
@@ -115,6 +135,13 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  /* Ember (from bamboo harness), used by lesson playgrounds */
+  --ember-surface: #1c0f2e;
+  --ember-line: #3a2852;
+  --ember-soft: #3b1e0c;
+  --ember-text: #ff8a3d;
+  --ember-ok: #3ccf91;
+  --ember-danger: #ff6b5e;
 }
 
 @layer base {
@@ -168,4 +195,14 @@
 .dark .hljs-title,
 .dark .hljs-title.function_ {
   color: oklch(0.8 0.12 250);
+}
+
+/* A dot travelling down a pipeline wire while a node runs. */
+@keyframes wire {
+  from {
+    top: 0;
+  }
+  to {
+    top: 100%;
+  }
 }

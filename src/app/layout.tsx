@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Outfit } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { container } from "@/lib/container";
@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+// Display face for lesson playgrounds (bamboo harness look).
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export function generateMetadata(): Metadata {
   return {
@@ -22,7 +24,11 @@ export function generateMetadata(): Metadata {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={cn("font-sans", geist.variable, outfit.variable)}
+      suppressHydrationWarning
+    >
       <body className="min-h-dvh antialiased">
         <ThemeProvider>
           {children}

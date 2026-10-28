@@ -2,14 +2,17 @@ import "server-only";
 import { ContentGenerationService } from "@/application/content-generation-service";
 import { defaultStrategies } from "@/application/content/strategies/registry";
 import { DashboardService } from "@/application/dashboard-service";
+import { LearnService } from "@/application/learn-service";
 import { NoteService } from "@/application/note-service";
 import { PlannerService } from "@/application/planner/planner-service";
 import { PostService } from "@/application/post-service";
+import { RateLimiter } from "@/application/rate-limiter";
 import { SlugService } from "@/application/slug-service";
 import { SubscriberService } from "@/application/subscriber-service";
 import { TopicService } from "@/application/topic-service";
 import type { IClock } from "@/domain/clock";
 import { MastraContentGenerator } from "@/infrastructure/ai/mastra-content-generator";
+import { LangChainGreeter } from "@/infrastructure/ai/langchain-greeter";
 import { generatorConfig } from "@/infrastructure/ai/model-provider";
 import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
 import { getEnv } from "@/infrastructure/config/env";
@@ -34,6 +37,8 @@ const strategies = defaultStrategies();
 let generator: MastraContentGenerator | undefined;
 const contentGenerator = () =>
   (generator ??= new MastraContentGenerator(generatorConfig(getEnv())));
+// Singleton so the rate limiter's counts survive across requests.
+let learn: LearnService | undefined;
 
 function repositories(db: Db) {
   return {
@@ -106,5 +111,11 @@ export const container = {
     subscribers: () => subscriberService(createSupabasePublicClient()),
     /** Only calendarFeed() works here: the anonymous client can reach the schedule via the token only. */
     planner: () => plannerService(createSupabasePublicClient()),
+    /** Lesson playgrounds: 5 model calls per IP per minute. */
+    learn: () =>
+      (learn ??= new LearnService(
+        new LangChainGreeter(getEnv().OPENAI_API_KEY),
+        new RateLimiter(5, 60_000, clock),
+      )),
   },
 };
