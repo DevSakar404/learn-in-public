@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageTimer } from "@/components/focus/page-timer";
 import { hasLesson, PlaygroundCta } from "@/components/learn/lesson-playground";
 import { Markdown } from "@/components/markdown";
 import { Badge } from "@/components/ui/badge";
 import { YouTubeEmbed } from "@/components/youtube-embed";
 import { splitPlayground } from "@/domain/note/lesson";
+import { sessionMinutes } from "@/domain/note/session";
 import { youtubeVideoId } from "@/domain/note/youtube";
 import { container } from "@/lib/container";
 import { formatDate } from "@/lib/format";
@@ -39,6 +41,7 @@ export default async function NotePage({ params }: PageProps<"/blog/[slug]">) {
   if (!note.ok) notFound();
   const n = note.value;
   const videoId = n.videoUrl ? youtubeVideoId(n.videoUrl) : null;
+  const next = await container.public.notes().nextInTopic(n);
 
   const { body, playground } = splitPlayground(n.contentMd);
 
@@ -55,6 +58,11 @@ export default async function NotePage({ params }: PageProps<"/blog/[slug]">) {
         </div>
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{n.title}</h1>
         {n.summary && <p className="text-lg text-muted-foreground">{n.summary}</p>}
+        <PageTimer
+          slug={n.slug}
+          minutes={sessionMinutes(n)}
+          next={next && { title: next.title, href: `/blog/${next.slug}` }}
+        />
       </header>
       {videoId && <YouTubeEmbed videoId={videoId} title={n.title} />}
       <Markdown
