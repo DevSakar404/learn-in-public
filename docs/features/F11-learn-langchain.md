@@ -17,4 +17,4 @@
 **Done when**
 
 - [x] Schema, rate limiter, service (limit + honeypot) and greeter (reply, 429, missing key) are unit-tested.
-- [ ] The lesson is published under the "LangChain" topic and the playground returns a real greeting.
+- [x] The lesson is published under the "LangChain" topic and the playground returns a real greeting (checked locally).
