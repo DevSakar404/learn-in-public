@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { hasLesson, PlaygroundCta } from "@/components/learn/lesson-playground";
 import { Markdown } from "@/components/markdown";
 import { Badge } from "@/components/ui/badge";
 import { YouTubeEmbed } from "@/components/youtube-embed";
+import { splitPlayground } from "@/domain/note/lesson";
 import { youtubeVideoId } from "@/domain/note/youtube";
 import { container } from "@/lib/container";
 import { formatDate } from "@/lib/format";
@@ -38,6 +40,8 @@ export default async function NotePage({ params }: PageProps<"/blog/[slug]">) {
   const n = note.value;
   const videoId = n.videoUrl ? youtubeVideoId(n.videoUrl) : null;
 
+  const { body, playground } = splitPlayground(n.contentMd);
+
   return (
     <article className="space-y-8">
       <header className="space-y-3">
@@ -53,7 +57,8 @@ export default async function NotePage({ params }: PageProps<"/blog/[slug]">) {
         {n.summary && <p className="text-lg text-muted-foreground">{n.summary}</p>}
       </header>
       {videoId && <YouTubeEmbed videoId={videoId} title={n.title} />}
-      <Markdown>{n.contentMd}</Markdown>
+      <Markdown>{body}</Markdown>
+      {hasLesson(playground) && <PlaygroundCta href={`/blog/${n.slug}/playground`} />}
     </article>
   );
 }

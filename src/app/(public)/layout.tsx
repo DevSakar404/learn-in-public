@@ -3,7 +3,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function PublicLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="group/page flex min-h-dvh flex-col">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:m-2 focus:rounded focus:bg-background focus:p-2"
@@ -13,7 +13,7 @@ export default function PublicLayout({ children }: LayoutProps<"/">) {
       <header className="border-b">
         <nav
           aria-label="Main"
-          className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3"
+          className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3 group-has-[[data-wide]]/page:max-w-6xl"
         >
           <Link href="/" className="font-semibold">
             Learn in Public
@@ -29,7 +29,10 @@ export default function PublicLayout({ children }: LayoutProps<"/">) {
           </div>
         </nav>
       </header>
-      <main id="main" className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
+      <main
+        id="main"
+        className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 group-has-[[data-wide]]/page:max-w-6xl"
+      >
         {children}
       </main>
       <footer className="border-t py-6 text-center text-sm text-muted-foreground">
