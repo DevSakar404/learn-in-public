@@ -4,7 +4,8 @@ Source text for the first LangChain lesson. Publish it as a normal note:
   Title: LangChain 1: your first node
   Summary: One JS function, one prompt, one model call. The smallest LangChain pipeline there is.
 Everything below the line is the note body. It explains the concept only, with the Feynman technique:
-one plain idea, an analogy (with a ```diagram block, src/components/learn/lesson-diagrams.tsx),
+one plain idea, an analogy (a ```concepts block puts each definition next to its analogy, and a
+```diagram block draws it: src/components/learn/),
 where people get stuck, then say it back in one sentence. **Bold** marks the main keywords: on a
 lesson post they get a soft highlight, so bold only those.
 The `playground` block is pulled out of the text and replaced by a call to action at the end of the
@@ -24,10 +25,16 @@ That's the whole lesson. Everything else in LangChain and LangGraph is built fro
 
 You walk up and say your name. The person at the counter takes a greeting card that already says "Welcome, \_\_\_\_!" and writes your name in the blank. They pass the card to the chef. The chef reads it and writes a friendly reply. The card comes back to you.
 
-- The card with a blank is the **prompt template**. The blank is `{name}`.
-- The chef is the **chat model**, the LLM (large language model). It reads the card and writes a reply.
-- Passing the card from counter to chef is the **chain**. In code it's one word: `pipe`.
-- The whole counter, from your name going in to the reply coming out, is the **node**.
+Each piece of the café has a real name in LangChain:
+
+```concepts
+Concept | What it is | In the café
+State | The data that goes into a node and comes back out, with something added | The note with your name on it
+Prompt template | A list of messages with blanks like `{name}`, filled in at run time | The greeting card with a blank
+Chat model | The LLM (large language model) that reads the messages and writes a reply | The chef
+Chain | Joins the template to the model with `pipe`, so the filled-in messages go straight to it | Passing the card to the chef
+Node | One function: state in, one job done, new state out | The whole counter
+```
 
 Put together, it looks like this:
 
