@@ -17,6 +17,8 @@
     "test:db": "SUPABASE_TEST=1 node --env-file=.env.local ./node_modules/vitest/vitest.mjs run test/contracts"
   },
   "dependencies": {
+    "@langchain/core": "^1.3.0",
+    "@langchain/openai": "^1.7.1",
     "@mastra/core": "^1.69.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.1",
