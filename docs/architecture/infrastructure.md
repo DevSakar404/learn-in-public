@@ -14,14 +14,14 @@ infrastructure/
            public-client.ts   cookie-less publishable-key client (public pages, so they stay static)
            database.types.ts  generated; never edit by hand
   repositories/               Supabase<Name>Repository · mappers.ts (row ↔ entity) · db-errors.ts (PG codes → domain errors)
-  ai/                         MastraContentGenerator · model-provider.ts (LLM_PROVIDER → model, timeout, sequential for ollama) · error-mapping.ts
+  ai/                         MastraContentGenerator · model-provider.ts (LLM_PROVIDER → model, timeout, sequential for ollama) · error-mapping.ts · langchain-greeter.ts (lesson node, OpenAI gpt-4o-mini)
   auth/                       SupabaseAuthGateway · is-admin.ts · proxy-session.ts (used by src/proxy.ts)
   system-clock.ts
 ```
 
 ## Rules
 
-- **Only this layer imports `@supabase/*` and `@mastra/*`.**
+- **Only this layer imports `@supabase/*`, `@mastra/*` and `@langchain/*`.**
 - Repositories map rows to entities in `mappers.ts`. Domain code never sees `Database["public"]["Tables"]…`.
 - Repositories translate DB errors into domain errors (e.g. unique violation `23505` → `ConflictError`).
 - Repositories **must behave exactly like the in-memory fakes** (Liskov). The shared contract tests prove it (see [testing.md](testing.md)).
