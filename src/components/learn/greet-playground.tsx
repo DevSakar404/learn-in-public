@@ -27,7 +27,7 @@ function useElapsed(running: boolean) {
 /** The line between two steps of the pipeline. A dot travels down it while the node runs. */
 function Wire({ active }: { active: boolean }) {
   return (
-    <div aria-hidden className="relative ml-[1.375rem] h-7 w-px bg-ember-text/50">
+    <div aria-hidden className="relative mx-auto h-7 w-px bg-ember-text/50">
       {active && (
         <span className="absolute left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-ember motion-safe:animate-[wire_0.8s_linear_infinite]" />
       )}
@@ -60,14 +60,13 @@ export function GreetPlayground() {
   return (
     <section
       aria-labelledby="greet-playground"
-      className="not-prose my-10 rounded-2xl border border-ember-line bg-card p-5 sm:p-6"
+      className="not-prose rounded-2xl border border-ember-line bg-card p-5 sm:p-6"
     >
       <h2 id="greet-playground" className="font-display text-2xl font-semibold tracking-tight">
-        Playground
+        Flow
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Runs <code className="font-mono text-ember-text">greetNode</code> with a real call to
-        OpenAI. You get 5 runs a minute.
+        Run the graph with your name. It makes a real call to OpenAI. You get 5 runs a minute.
       </p>
 
       <form action={action} onSubmit={() => setElapsed(0)} className="mt-6" noValidate>
@@ -107,43 +106,58 @@ export function GreetPlayground() {
         )}
       </form>
 
-      <Wire active={pending} />
-
-      <div
-        className={cn(
-          "rounded-xl border bg-ember-surface p-4 transition-colors",
-          pending ? "border-ember" : "border-ember-line",
-        )}
-      >
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <p className="font-mono text-sm font-semibold">greetNode</p>
-          <p role="status" className={cn("text-sm font-medium tabular-nums", STATUS_STYLE[status])}>
-            {statusText}
+      <ol aria-label="Graph" className="mt-6">
+        <li className="mx-auto w-fit max-w-full rounded-full border border-ember-line px-4 py-1.5 font-mono text-xs">
+          <span className="font-semibold">START</span>{" "}
+          <span className="text-muted-foreground">
+            {`{ name: ${state.values?.name ? JSON.stringify(state.values.name) : "…"} }`}
+          </span>
+        </li>
+        <li>
+          <Wire active={pending} />
+        </li>
+        <li
+          className={cn(
+            "rounded-xl border bg-ember-surface p-4 transition-colors",
+            pending ? "border-ember" : "border-ember-line",
+          )}
+        >
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <p className="font-mono text-sm font-semibold">greetNode</p>
+            <p
+              role="status"
+              className={cn("text-sm font-medium tabular-nums", STATUS_STYLE[status])}
+            >
+              {statusText}
+            </p>
+          </div>
+          <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="rounded-md bg-card px-2 py-1 font-mono">ChatPromptTemplate</span>
+            <span aria-label="piped into">|</span>
+            <span className="rounded-md bg-card px-2 py-1 font-mono">ChatOpenAI</span>
           </p>
-        </div>
-        <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="rounded-md bg-card px-2 py-1 font-mono">ChatPromptTemplate</span>
-          <span aria-label="piped into">|</span>
-          <span className="rounded-md bg-card px-2 py-1 font-mono">ChatOpenAI</span>
-        </p>
-      </div>
-
-      <Wire active={pending} />
-
-      <div aria-live="polite">
-        <p className="font-mono text-xs text-muted-foreground">state.greeting</p>
-        {result ? (
-          <p className="mt-1.5 font-display text-xl leading-snug">{result.greeting}</p>
-        ) : state.error && !nameErrors ? (
-          <p role="alert" className="mt-1.5 text-sm text-ember-danger">
-            {state.error}
+        </li>
+        <li>
+          <Wire active={pending} />
+        </li>
+        <li aria-live="polite" className="rounded-xl border border-dashed border-ember-line p-4">
+          <p className="font-mono text-xs">
+            <span className="font-semibold">END</span>{" "}
+            <span className="text-muted-foreground">state.greeting</span>
           </p>
-        ) : (
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            Type your name and run the node to fill this in.
-          </p>
-        )}
-      </div>
+          {result ? (
+            <p className="mt-2 font-display text-xl leading-snug">{result.greeting}</p>
+          ) : state.error && !nameErrors ? (
+            <p role="alert" className="mt-2 text-sm text-ember-danger">
+              {state.error}
+            </p>
+          ) : (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Type your name and run the node to fill this in.
+            </p>
+          )}
+        </li>
+      </ol>
 
       {result && (
         <details className="group mt-6 rounded-xl border border-ember-line">
