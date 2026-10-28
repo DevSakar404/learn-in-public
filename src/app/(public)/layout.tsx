@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FocusBar } from "@/components/focus/focus-bar";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function PublicLayout({ children }: LayoutProps<"/">) {
@@ -19,6 +20,7 @@ export default function PublicLayout({ children }: LayoutProps<"/">) {
             Learn in Public
           </Link>
           <div className="flex items-center gap-1 text-sm">
+            <FocusBar />
             <Link href="/blog" className="rounded px-3 py-2 hover:bg-muted">
               Blog
             </Link>
