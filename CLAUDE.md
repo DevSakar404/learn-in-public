@@ -44,6 +44,7 @@ Product and feature list: [docs/00-overview.md](docs/00-overview.md).
 | Schema, RLS, migrations           | [docs/architecture/database.md](docs/architecture/database.md)             |
 | Tests and fakes                   | [docs/architecture/testing.md](docs/architecture/testing.md)               |
 | A specific feature                | `docs/features/F*.md`                                                      |
+| "add blog" (write a new post)     | [docs/add-blog.md](docs/add-blog.md)                                       |
 
 ## Conventions
 
