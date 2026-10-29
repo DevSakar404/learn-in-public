@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  applySync,
   BREAK_MS,
   freshState,
   MAX_TICK_MS,
   parseFocusState,
   setOff,
+  setTarget,
   startBreakNow,
   tick,
   type FocusEvent,
@@ -146,5 +148,45 @@ describe("focus timer: rules", () => {
     expect(parseFocusState(null, DAY)).toEqual(freshState(DAY));
     expect(parseFocusState("{not json", DAY)).toEqual(freshState(DAY));
     expect(parseFocusState(JSON.stringify({ version: 0 }), DAY)).toEqual(freshState(DAY));
+  });
+});
+
+describe("focus timer: admin sync", () => {
+  const reply = { otherMinutes: 10, target: 75 as const };
+
+  it("adopts the other devices' minutes and the server target when nothing changed here", () => {
+    const s = applySync(freshState(DAY), reply, { day: DAY, target: undefined });
+    expect(s).toMatchObject({ otherMinutes: 10, target: 75, targetDirty: false });
+  });
+
+  it("clears the dirty flag once the server has saved the target it was sent", () => {
+    const s = setTarget(freshState(DAY), 50);
+    expect(s.targetDirty).toBe(true);
+    const synced = applySync(s, { otherMinutes: 0, target: 50 }, { day: DAY, target: 50 });
+    expect(synced).toMatchObject({ target: 50, targetDirty: false });
+  });
+
+  it("keeps a target changed while the request was in flight", () => {
+    const s = setTarget(setTarget(freshState(DAY), 50), 100); // sent 50, then picked 100
+    const synced = applySync(s, { otherMinutes: 3, target: 50 }, { day: DAY, target: 50 });
+    expect(synced).toMatchObject({ target: 100, targetDirty: true, otherMinutes: 3 });
+  });
+
+  it("ignores other-device minutes from a reply for an earlier day", () => {
+    const s = applySync(freshState("2026-10-29"), reply, { day: DAY, target: undefined });
+    expect(s.otherMinutes).toBe(0);
+  });
+
+  it("resets other-device minutes at midnight but keeps an unsent target", () => {
+    const s = { ...setTarget(freshState(DAY), 50), otherMinutes: 30 };
+    const next = tick(s, { now: at(24, 0), localDay: "2026-10-29", active: true, page: null });
+    expect(next.state).toMatchObject({ otherMinutes: 0, target: 50, targetDirty: true });
+  });
+
+  it("reads state saved before these fields existed", () => {
+    const old: Partial<FocusState> = freshState(DAY);
+    delete old.otherMinutes;
+    delete old.targetDirty;
+    expect(parseFocusState(JSON.stringify(old), DAY)).toEqual(freshState(DAY));
   });
 });

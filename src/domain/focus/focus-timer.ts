@@ -29,6 +29,9 @@ export const focusStateSchema = z.object({
   pages: z.record(z.string(), z.object({ doneMs: z.number().min(0), done: z.boolean() })),
   /** Last active tick; null after an inactive one, so time away never counts. */
   lastTickAt: z.number().nullable(),
+  /** Admin sync only: today's minutes from other devices, and a target change not yet sent. */
+  otherMinutes: z.number().min(0).default(0),
+  targetDirty: z.boolean().default(false),
 });
 export type FocusState = z.infer<typeof focusStateSchema>;
 
@@ -58,6 +61,8 @@ export function freshState(localDay: string): FocusState {
     pomodoro: IDLE,
     pages: {},
     lastTickAt: null,
+    otherMinutes: 0,
+    targetDirty: false,
   };
 }
 
@@ -82,7 +87,12 @@ export function tick(
   const today =
     prev.day === input.localDay
       ? prev
-      : { ...freshState(input.localDay), target: prev.target, off: prev.off };
+      : {
+          ...freshState(input.localDay),
+          target: prev.target,
+          off: prev.off,
+          targetDirty: prev.targetDirty,
+        };
 
   // The time since the last tick belongs to the phase it was spent in, not the one we switch to.
   const spentIn = today.pomodoro.phase;
@@ -136,7 +146,22 @@ export function startBreakNow(state: FocusState, now: number): FocusState {
 }
 
 export function setTarget(state: FocusState, target: FocusTarget): FocusState {
-  return { ...state, target };
+  return { ...state, target, targetDirty: true };
+}
+
+/**
+ * Merges a sync reply. `sent` is what the request carried: a reply for an earlier day doesn't
+ * set today's other-device minutes, and a target changed here while the request was in flight
+ * stays local (and dirty) instead of being overwritten.
+ */
+export function applySync(
+  state: FocusState,
+  reply: { otherMinutes: number; target: FocusTarget },
+  sent: { day: string; target: FocusTarget | undefined },
+): FocusState {
+  const otherMinutes = state.day === sent.day ? reply.otherMinutes : state.otherMinutes;
+  if (state.targetDirty && state.target !== sent.target) return { ...state, otherMinutes };
+  return { ...state, otherMinutes, target: reply.target, targetDirty: false };
 }
 
 export function setOff(state: FocusState, off: boolean): FocusState {
