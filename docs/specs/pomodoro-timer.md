@@ -88,7 +88,7 @@ Built: [`supabase/migrations/20261028120000_focus_timer.sql`](../../supabase/mig
 - A moment counts once if the pomodoro is in `focus` or the page session is running; only active (visible + focused) ticks count; an inactive tick clears `lastTickAt`, so time away never counts; gaps are capped at `MAX_TICK_MS`.
 - A full pomodoro breaks once no page session is still running (the "break waits for the page" rule is derived, not stored).
 - A new local day resets everything except `target` and `off`. Saved state that fails Zod starts fresh.
-- Admin-only fields (`deviceId`, other devices' minutes) arrive with T8.
+- Admin sync (T8): `otherMinutes` and `targetDirty` live in the same state; `applySync` merges a reply. The device id and the sync flag are separate keys (`focus:device`, `focus:sync`), set by the `/admin` layout and cleared on `UNAUTHORIZED`. See `src/components/focus/focus-sync.ts`.
 
 **Session length:** [`src/domain/note/session.ts`](../../src/domain/note/session.ts): the admin's minutes, else words / 200 rounded up, never under 5.
 
