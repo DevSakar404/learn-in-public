@@ -36,5 +36,6 @@
 | [F10](features/F10-planner.md)         | Content planner + calendar reminders   | post-MVP | ✅     |
 | [F11](features/F11-learn-langchain.md) | Learn LangChain: lesson 1 + playground | post-MVP | ✅     |
 | [F12](features/F12-page-chat.md)       | Page chat: ask about highlighted text  | post-MVP | ⬜     |
+| [F13](features/F13-focus-timer.md)     | Focus timer: pomodoro + page sessions  | post-MVP | ✅     |
 
 **Out of scope:** auto-publishing, sending email, multiple users/roles, comments/likes/analytics, AI image generation (templated slide images are F9). See [03-tech-debt.md](03-tech-debt.md) for what comes later.
