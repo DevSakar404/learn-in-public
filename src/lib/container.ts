@@ -2,6 +2,7 @@ import "server-only";
 import { ContentGenerationService } from "@/application/content-generation-service";
 import { defaultStrategies } from "@/application/content/strategies/registry";
 import { DashboardService } from "@/application/dashboard-service";
+import { FocusService } from "@/application/focus-service";
 import { LearnService } from "@/application/learn-service";
 import { NoteService } from "@/application/note-service";
 import { PlannerService } from "@/application/planner/planner-service";
@@ -16,6 +17,7 @@ import { LangChainGreeter } from "@/infrastructure/ai/langchain-greeter";
 import { generatorConfig } from "@/infrastructure/ai/model-provider";
 import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
 import { getEnv } from "@/infrastructure/config/env";
+import { SupabaseFocusRepository } from "@/infrastructure/repositories/supabase-focus-repository";
 import { SupabasePlannerSettingsRepository } from "@/infrastructure/repositories/supabase-planner-settings-repository";
 import { SupabaseNoteRepository } from "@/infrastructure/repositories/supabase-note-repository";
 import { SupabasePostRepository } from "@/infrastructure/repositories/supabase-post-repository";
@@ -99,6 +101,8 @@ export const container = {
       const db = await createSupabaseServerClient();
       return plannerService(db);
     },
+    focus: async () =>
+      new FocusService(new SupabaseFocusRepository(await createSupabaseServerClient()), clock),
     dashboard: async () => {
       const r = repositories(await createSupabaseServerClient());
       return new DashboardService(r.notes, r.posts, r.subscribers, clock, getEnv().SITE_TIMEZONE);
