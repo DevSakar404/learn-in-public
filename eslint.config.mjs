@@ -80,6 +80,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "src/infrastructure/supabase/database.types.ts",
+    // Git worktrees for parallel sessions (git-ignored locally); each is linted from its own checkout.
+    ".worktrees/**",
   ]),
 ]);
 
