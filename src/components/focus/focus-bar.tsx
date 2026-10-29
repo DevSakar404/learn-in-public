@@ -16,6 +16,7 @@ import {
 } from "@/domain/focus/focus-timer";
 import { cn } from "@/lib/utils";
 import { runTick, updateFocusState, useFocusState, type ActivePage } from "./focus-store";
+import { syncNow } from "./focus-sync";
 
 export const clock = (ms: number) => {
   const s = Math.max(0, Math.ceil(ms / 1000));
@@ -91,6 +92,17 @@ export function FocusBar() {
     };
   }, [router]);
 
+  // Admin browsers only (syncNow is a no-op elsewhere).
+  useEffect(() => {
+    void syncNow();
+    const id = setInterval(syncNow, 60_000);
+    window.addEventListener("pagehide", syncNow);
+    return () => {
+      clearInterval(id);
+      window.removeEventListener("pagehide", syncNow);
+    };
+  }, []);
+
   // Close the menu on an outside click or Escape.
   useEffect(() => {
     const close = (e: Event) => {
@@ -109,7 +121,7 @@ export function FocusBar() {
   }, []);
 
   if (!state) return null;
-  const minutes = Math.floor(state.focusMs / 60_000);
+  const minutes = Math.floor(state.focusMs / 60_000) + state.otherMinutes;
   const met = minutes >= state.target;
 
   return (

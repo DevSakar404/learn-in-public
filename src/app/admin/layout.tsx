@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { AdminNav } from "@/components/admin-nav";
+import { FocusSyncFlag } from "@/components/focus/focus-sync-flag";
 import { SubmitButton } from "@/components/submit-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { requireAdminPage } from "../_lib/auth";
@@ -16,6 +17,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="min-h-dvh">
+      <FocusSyncFlag />
       <header className="border-b">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-3">
           <div className="flex flex-wrap items-center gap-4">
