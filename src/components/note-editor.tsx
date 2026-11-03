@@ -26,6 +26,7 @@ export function NoteEditor({ note, topics }: { note?: Note; topics: Topic[] }) {
     contentMd: note?.contentMd ?? "",
     topicId: note?.topic.id ?? topics[0]?.id ?? "",
     videoUrl: note?.videoUrl ?? "",
+    sessionMinutes: note?.sessionMinutes?.toString() ?? "",
   });
   const [showPreview, setShowPreview] = useState(false);
   const errors = state.fieldErrors ?? {};
@@ -62,6 +63,21 @@ export function NoteEditor({ note, topics }: { note?: Note; topics: Topic[] }) {
           <Label htmlFor="videoUrl">YouTube URL (optional)</Label>
           <Input {...bind("videoUrl")} type="url" placeholder="https://youtu.be/…" />
           <FieldError id="videoUrl-error" errors={errors.videoUrl} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="sessionMinutes">Session minutes (optional)</Label>
+          <Input
+            {...bind("sessionMinutes")}
+            type="number"
+            inputMode="numeric"
+            min={5}
+            max={240}
+            placeholder="Blank = reading time"
+          />
+          <p className="text-sm text-muted-foreground">
+            Reading + playground + exercises. Used by the page focus timer.
+          </p>
+          <FieldError id="sessionMinutes-error" errors={errors.sessionMinutes} />
         </div>
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="summary">Summary</Label>

@@ -20,8 +20,11 @@ The single home for deferred work. In code, deliberate shortcuts are marked with
 | 9   | Streak and counts via a SQL view/RPC, plus pagination                                                                                                                                                               | The MVP reads rows into JS. Fine at ~100 notes.                         |
 | 10  | Rate-limit signups + Turnstile/BotID                                                                                                                                                                                | The honeypot only stops simple bots.                                    |
 | 11  | Blog OG images (reuse `SlideImage` + a theme), full-text search · optional AI cover image behind an `IImageGenerator`                                                                                               | Social click-through and discoverability.                               |
+| 12  | Shared rate limit for lesson playgrounds (Supabase/Redis counter) + Turnstile                                                                                                                                       | The in-memory limit is per server instance.                             |
 
 ## Future features (interfaces are ready)
+
+- Learn section: curriculum, LangGraph lessons, n8n-style workflow view (React Flow, as in bamboo harness), code editor, CLI, chatbot.
 
 - `IPublisher` per platform, for auto-posting.
 - `INewsletterSender`, for sending emails.

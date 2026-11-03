@@ -25,7 +25,7 @@
 
 ## State
 
-Server data comes from Server Component props. Filters live in URL search params. Local UI uses `useState`. No global store.
+Server data comes from Server Component props. Filters live in URL search params. Local UI uses `useState`. No global store, except the focus timer's browser store (`components/focus/focus-store.ts`, `localStorage` + `useSyncExternalStore`), which the header and the page timer share ([F13](../features/F13-focus-timer.md)).
 
 ## Accessibility checklist (every component)
 

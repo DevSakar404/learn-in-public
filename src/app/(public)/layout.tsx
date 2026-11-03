@@ -1,12 +1,13 @@
 import { RssIcon } from "lucide-react";
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
+import { FocusBar } from "@/components/focus/focus-bar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
 export default function PublicLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="group/page flex min-h-dvh flex-col">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:p-2 focus:ring-2 focus:ring-ring"
@@ -16,10 +17,11 @@ export default function PublicLayout({ children }: LayoutProps<"/">) {
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
         <nav
           aria-label="Main"
-          className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4 sm:px-6"
+          className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4 group-has-[[data-wide]]/page:max-w-6xl sm:px-6"
         >
           <BrandMark />
           <div className="flex items-center gap-1 text-sm">
+            <FocusBar />
             <Link
               href="/blog"
               className="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:text-foreground"
@@ -35,7 +37,10 @@ export default function PublicLayout({ children }: LayoutProps<"/">) {
           </div>
         </nav>
       </header>
-      <main id="main" className="mx-auto w-full max-w-2xl flex-1 px-4 py-10 sm:px-6 sm:py-16">
+      <main
+        id="main"
+        className="mx-auto w-full max-w-2xl flex-1 px-4 py-10 group-has-[[data-wide]]/page:max-w-6xl sm:px-6 sm:py-16"
+      >
         {children}
       </main>
       <footer className="border-t border-border/60">

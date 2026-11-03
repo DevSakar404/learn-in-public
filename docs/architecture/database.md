@@ -7,13 +7,14 @@
 | Table              | Key columns                                                                                                                                                                                                          |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `topics`           | id, name, slug (unique), description, created_at                                                                                                                                                                     |
-| `notes`            | id, title, slug (unique), summary, content_md, topic_id → topics, video_url?, status `note_status`, published_at?, created_at, updated_at                                                                            |
+| `notes`            | id, title, slug (unique), summary, content_md, topic_id → topics, video_url?, session_minutes? (5–240), status `note_status`, published_at?, created_at, updated_at                                                  |
 | `posts`            | id, note_id → notes (cascade), platform `platform`, content **jsonb**, status `post_status`, posted_url?, model_used, prompt_version, usage jsonb, posted_at?, created_at, updated_at, **unique(note_id, platform)** |
 | `subscribers`      | id, email (unique, lower-cased), status `subscriber_status`, created_at                                                                                                                                              |
-| `planner_settings` | single row (`id = true`): daily_time, youtube_weekday, reminder_minutes, journey_start, calendar_token                                                                                                               |
+| `planner_settings` | single row (`id = true`): daily_time, youtube_weekday, reminder_minutes, journey_start, calendar_token, focus_target_minutes (25/50/75/100)                                                                          |
+| `focus_days`       | day, device_id, minutes (0–1440), updated_at, **primary key (day, device_id)**: the admin's daily focus total per device ([F13](../features/F13-focus-timer.md))                                                     |
 
 Enums: `note_status (draft, published)`, `post_status (draft, approved, posted)`, `platform (x, linkedin, instagram, youtube)`, `subscriber_status (active, unsubscribed)`.
-Triggers: `updated_at` on notes and posts. Indexes: slugs, `notes(status, published_at desc)`, `notes(topic_id)`, `posts(note_id)`.
+Triggers: `updated_at` on notes, posts, planner_settings and focus_days. Indexes: slugs, `notes(status, published_at desc)`, `notes(topic_id)`, `posts(note_id)`.
 
 ## RLS matrix (enabled on every table)
 
@@ -24,6 +25,9 @@ Triggers: `updated_at` on notes and posts. Indexes: slugs, `notes(status, publis
 | posts            | none                                                                                         | all                                                     |
 | subscribers      | insert only                                                                                  | all                                                     |
 | planner_settings | none (the calendar feed goes through `planner_feed(token)`, security definer, schedule only) | all                                                     |
+| focus_days       | none (`focus_sync()` is security invoker and not granted to anon)                            | all                                                     |
+
+`focus_sync(day, device_id, minutes, target?)`: upserts this device's row keeping the **larger** minutes, saves the target if given, and returns the other devices' minutes for that day plus the target. Retries and late requests can't lower or double a total.
 
 ## Workflow
 

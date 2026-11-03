@@ -26,6 +26,8 @@ const eslintConfig = defineConfig([
         "next/*",
         "@supabase/*",
         "@mastra/*",
+        "@langchain/*",
+        "langchain",
         "react",
       ],
       "domain/ is pure TypeScript: no framework or outer-layer imports.",
@@ -43,6 +45,8 @@ const eslintConfig = defineConfig([
         "next/*",
         "@supabase/*",
         "@mastra/*",
+        "@langchain/*",
+        "langchain",
         "react",
       ],
       "application/ depends only on domain/ interfaces.",
@@ -58,7 +62,15 @@ const eslintConfig = defineConfig([
   {
     files: ["src/components/**"],
     rules: banImports(
-      ["@/infrastructure/*", "@/application/*", "@/lib/container", "@supabase/*", "@mastra/*"],
+      [
+        "@/infrastructure/*",
+        "@/application/*",
+        "@/lib/container",
+        "@supabase/*",
+        "@mastra/*",
+        "@langchain/*",
+        "langchain",
+      ],
       "components/ get data via props and mutate via server actions only.",
     ),
   },
@@ -68,6 +80,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "src/infrastructure/supabase/database.types.ts",
+    // Git worktrees for parallel sessions (git-ignored locally); each is linted from its own checkout.
+    ".worktrees/**",
   ]),
 ]);
 

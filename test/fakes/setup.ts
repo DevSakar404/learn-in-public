@@ -1,6 +1,7 @@
 import { ContentGenerationService } from "@/application/content-generation-service";
 import { defaultStrategies } from "@/application/content/strategies/registry";
 import { DashboardService } from "@/application/dashboard-service";
+import { FocusService } from "@/application/focus-service";
 import { NoteService, type NoteInput } from "@/application/note-service";
 import { PlannerService } from "@/application/planner/planner-service";
 import { PostService } from "@/application/post-service";
@@ -10,6 +11,7 @@ import { TopicService } from "@/application/topic-service";
 import { FakeContentGenerator } from "./fake-content-generator";
 import { FixedClock } from "./fixed-clock";
 import {
+  InMemoryFocusRepository,
   InMemoryNoteRepository,
   InMemoryPlannerSettingsRepository,
   InMemoryPostRepository,
@@ -55,6 +57,7 @@ export function setup(now = new Date("2026-03-10T12:00:00Z")) {
     ),
     subscribers: new SubscriberService(subscriberRepo, subscriberRepo),
     dashboard: new DashboardService(noteRepo, postRepo, subscriberRepo, clock, "Asia/Kolkata"),
+    focus: new FocusService(new InMemoryFocusRepository(), clock),
 
     /** A topic + a draft note, ready to use. */
     async seedNote(overrides: Partial<NoteInput> = {}) {
@@ -66,6 +69,7 @@ export function setup(now = new Date("2026-03-10T12:00:00Z")) {
         contentMd: "# Tokens\n\nThey are not words.",
         topicId: topic.value.id,
         videoUrl: null,
+        sessionMinutes: null,
         ...overrides,
       });
       if (!note.ok) throw note.error;

@@ -18,6 +18,17 @@ export const noteInputSchema = z.object({
     .default("")
     .refine((v) => v === "" || youtubeVideoId(v) !== null, "Must be a YouTube link")
     .transform((v) => v || null),
+  // Blank → null (the page falls back to reading time).
+  sessionMinutes: z
+    .union([
+      z.literal("").transform(() => null),
+      z.coerce
+        .number("Use a number of minutes")
+        .int("Use whole minutes")
+        .min(5, "At least 5 minutes")
+        .max(240, "At most 240 minutes"),
+    ])
+    .default(null),
 });
 export type NoteInput = z.output<typeof noteInputSchema>;
 
@@ -35,6 +46,16 @@ export class NoteService {
 
   listPublished(filter: Omit<NoteFilter, "status"> = {}): Promise<Note[]> {
     return this.reader.list({ ...filter, status: "published" });
+  }
+
+  /** The next published note in the same topic (oldest first), or null after the last one. */
+  async nextInTopic(note: Note): Promise<Note | null> {
+    const at = note.publishedAt?.getTime();
+    if (at === undefined) return null;
+    const later = (await this.listPublished({ topicId: note.topic.id })).filter(
+      (n) => (n.publishedAt?.getTime() ?? 0) > at,
+    );
+    return later.at(-1) ?? null; // the list is newest first
   }
 
   get(id: string): Promise<Result<Note>> {

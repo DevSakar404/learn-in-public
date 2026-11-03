@@ -34,12 +34,34 @@ export type Database = {
   }
   public: {
     Tables: {
+      focus_days: {
+        Row: {
+          day: string
+          device_id: string
+          minutes: number
+          updated_at: string
+        }
+        Insert: {
+          day: string
+          device_id: string
+          minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          day?: string
+          device_id?: string
+          minutes?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           content_md: string
           created_at: string
           id: string
           published_at: string | null
+          session_minutes: number | null
           slug: string
           status: Database["public"]["Enums"]["note_status"]
           summary: string
@@ -53,6 +75,7 @@ export type Database = {
           created_at?: string
           id?: string
           published_at?: string | null
+          session_minutes?: number | null
           slug: string
           status?: Database["public"]["Enums"]["note_status"]
           summary?: string
@@ -66,6 +89,7 @@ export type Database = {
           created_at?: string
           id?: string
           published_at?: string | null
+          session_minutes?: number | null
           slug?: string
           status?: Database["public"]["Enums"]["note_status"]
           summary?: string
@@ -88,6 +112,7 @@ export type Database = {
         Row: {
           calendar_token: string
           daily_time: string
+          focus_target_minutes: number
           id: boolean
           journey_start: string
           reminder_minutes: number
@@ -97,6 +122,7 @@ export type Database = {
         Insert: {
           calendar_token?: string
           daily_time?: string
+          focus_target_minutes?: number
           id?: boolean
           journey_start?: string
           reminder_minutes?: number
@@ -106,6 +132,7 @@ export type Database = {
         Update: {
           calendar_token?: string
           daily_time?: string
+          focus_target_minutes?: number
           id?: boolean
           journey_start?: string
           reminder_minutes?: number
@@ -217,6 +244,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      focus_sync: {
+        Args: {
+          p_day: string
+          p_device_id: string
+          p_minutes: number
+          p_target?: number
+        }
+        Returns: {
+          other_minutes: number
+          target: number
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
       planner_feed: {
         Args: { token: string }

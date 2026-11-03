@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { container } from "@/lib/container";
@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+// Display face for lesson playgrounds (bamboo harness look).
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 // Mobile browser chrome matches the page background (globals.css --background).
@@ -33,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("font-sans", geist.variable, geistMono.variable)}
+      className={cn("font-sans", geist.variable, geistMono.variable, outfit.variable)}
       suppressHydrationWarning
     >
       <body className="min-h-dvh antialiased">

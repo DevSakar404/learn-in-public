@@ -2,17 +2,23 @@ import "server-only";
 import { ContentGenerationService } from "@/application/content-generation-service";
 import { defaultStrategies } from "@/application/content/strategies/registry";
 import { DashboardService } from "@/application/dashboard-service";
+import { FocusService } from "@/application/focus-service";
+import { LearnService } from "@/application/learn-service";
 import { NoteService } from "@/application/note-service";
 import { PlannerService } from "@/application/planner/planner-service";
 import { PostService } from "@/application/post-service";
+import { RateLimiter } from "@/application/rate-limiter";
 import { SlugService } from "@/application/slug-service";
 import { SubscriberService } from "@/application/subscriber-service";
 import { TopicService } from "@/application/topic-service";
 import type { IClock } from "@/domain/clock";
 import { MastraContentGenerator } from "@/infrastructure/ai/mastra-content-generator";
+import { LangChainGreeter } from "@/infrastructure/ai/langchain-greeter";
+import { LangChainWorkflows } from "@/infrastructure/ai/langchain-workflows";
 import { generatorConfig } from "@/infrastructure/ai/model-provider";
 import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
 import { getEnv } from "@/infrastructure/config/env";
+import { SupabaseFocusRepository } from "@/infrastructure/repositories/supabase-focus-repository";
 import { SupabasePlannerSettingsRepository } from "@/infrastructure/repositories/supabase-planner-settings-repository";
 import { SupabaseNoteRepository } from "@/infrastructure/repositories/supabase-note-repository";
 import { SupabasePostRepository } from "@/infrastructure/repositories/supabase-post-repository";
@@ -34,6 +40,8 @@ const strategies = defaultStrategies();
 let generator: MastraContentGenerator | undefined;
 const contentGenerator = () =>
   (generator ??= new MastraContentGenerator(generatorConfig(getEnv())));
+// Singleton so the rate limiter's counts survive across requests.
+let learn: LearnService | undefined;
 
 function repositories(db: Db) {
   return {
@@ -94,6 +102,8 @@ export const container = {
       const db = await createSupabaseServerClient();
       return plannerService(db);
     },
+    focus: async () =>
+      new FocusService(new SupabaseFocusRepository(await createSupabaseServerClient()), clock),
     dashboard: async () => {
       const r = repositories(await createSupabaseServerClient());
       return new DashboardService(r.notes, r.posts, r.subscribers, clock, getEnv().SITE_TIMEZONE);
@@ -106,5 +116,12 @@ export const container = {
     subscribers: () => subscriberService(createSupabasePublicClient()),
     /** Only calendarFeed() works here: the anonymous client can reach the schedule via the token only. */
     planner: () => plannerService(createSupabasePublicClient()),
+    /** Lesson playgrounds: 5 runs per IP per minute, shared by every lesson. */
+    learn: () =>
+      (learn ??= new LearnService(
+        new LangChainGreeter(getEnv().OPENAI_API_KEY),
+        new LangChainWorkflows(getEnv().OPENAI_API_KEY),
+        new RateLimiter(5, 60_000, clock),
+      )),
   },
 };

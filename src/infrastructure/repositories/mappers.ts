@@ -27,6 +27,7 @@ export function toNote(r: NoteRow): Note {
     contentMd: r.content_md,
     topic: r.topic,
     videoUrl: r.video_url,
+    sessionMinutes: r.session_minutes,
     status: r.status,
     publishedAt: r.published_at ? new Date(r.published_at) : null,
     createdAt: new Date(r.created_at),

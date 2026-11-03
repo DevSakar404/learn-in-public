@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { logout } from "@/app/actions/auth";
 import { AdminNav } from "@/components/admin-nav";
 import { BrandMark } from "@/components/brand-mark";
+import { FocusSyncFlag } from "@/components/focus/focus-sync-flag";
 import { SubmitButton } from "@/components/submit-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { requireAdminPage } from "../_lib/auth";
@@ -17,6 +18,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="min-h-dvh">
+      <FocusSyncFlag />
       {/* The blur sits on a pseudo-element: backdrop-filter on the header itself would pin the
           phone tab bar (position: fixed, inside AdminNav) to the header instead of the viewport. */}
       <header className="sticky top-0 z-40 border-b border-border/60 before:absolute before:inset-0 before:-z-10 before:bg-background/80 before:backdrop-blur-md">

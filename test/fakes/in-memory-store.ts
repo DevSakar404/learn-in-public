@@ -1,3 +1,6 @@
+import type { IFocusRepository } from "@/domain/focus/focus-repository";
+import type { FocusSyncInput, FocusSyncResult } from "@/domain/focus/focus-sync";
+import type { FocusTarget } from "@/domain/focus/focus-timer";
 import type { Note } from "@/domain/note/note";
 import type { PlannerSchedule, PlannerSettings } from "@/domain/planner/planner-settings";
 import type {
@@ -240,5 +243,22 @@ export class InMemoryPlannerSettingsRepository
   async rotateToken(): Promise<Result<PlannerSettings>> {
     this.db.planner = { ...this.db.planner, calendarToken: crypto.randomUUID() };
     return ok(this.db.planner);
+  }
+}
+
+/** focus_days + the target, with the same keep-the-max rule as the focus_sync RPC. */
+export class InMemoryFocusRepository implements IFocusRepository {
+  private minutes = new Map<string, number>(); // `${day}|${deviceId}`
+  private target: FocusTarget = 25;
+
+  async sync(input: FocusSyncInput): Promise<Result<FocusSyncResult>> {
+    const key = `${input.day}|${input.deviceId}`;
+    this.minutes.set(key, Math.max(this.minutes.get(key) ?? 0, input.minutes));
+    if (input.target !== undefined) this.target = input.target;
+    let otherMinutes = 0;
+    for (const [k, m] of this.minutes) {
+      if (k.startsWith(`${input.day}|`) && k !== key) otherMinutes += m;
+    }
+    return ok({ otherMinutes, target: this.target });
   }
 }

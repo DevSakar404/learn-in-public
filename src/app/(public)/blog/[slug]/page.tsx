@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
+import { PageTimer } from "@/components/focus/page-timer";
+import { hasLesson, PlaygroundCta } from "@/components/learn/lesson-playground";
 import { Markdown } from "@/components/markdown";
 import { YouTubeEmbed } from "@/components/youtube-embed";
+import { splitPlayground } from "@/domain/note/lesson";
+import { sessionMinutes } from "@/domain/note/session";
 import { youtubeVideoId } from "@/domain/note/youtube";
 import { container } from "@/lib/container";
 import { formatDate } from "@/lib/format";
@@ -37,6 +41,9 @@ export default async function NotePage({ params }: PageProps<"/blog/[slug]">) {
   if (!note.ok) notFound();
   const n = note.value;
   const videoId = n.videoUrl ? youtubeVideoId(n.videoUrl) : null;
+  const next = await container.public.notes().nextInTopic(n);
+
+  const { body, playground } = splitPlayground(n.contentMd);
 
   return (
     <article className="space-y-10">
@@ -65,9 +72,25 @@ export default async function NotePage({ params }: PageProps<"/blog/[slug]">) {
         {n.summary && (
           <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">{n.summary}</p>
         )}
+        <PageTimer
+          slug={n.slug}
+          minutes={sessionMinutes(n)}
+          next={next && { title: next.title, href: `/blog/${next.slug}` }}
+        />
       </header>
       {videoId && <YouTubeEmbed videoId={videoId} title={n.title} />}
-      <Markdown bleed>{n.contentMd}</Markdown>
+      <Markdown
+        bleed
+        className={
+          // Lesson posts: **bold** keywords get a soft highlight.
+          hasLesson(playground)
+            ? "prose-strong:rounded prose-strong:bg-ember-soft prose-strong:px-1 prose-strong:text-ember-text"
+            : undefined
+        }
+      >
+        {body}
+      </Markdown>
+      {hasLesson(playground) && <PlaygroundCta href={`/blog/${n.slug}/playground`} />}
     </article>
   );
 }
