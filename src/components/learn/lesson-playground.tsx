@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GreetPlayground } from "@/components/learn/greet-playground";
+import { GRAPH_LESSONS } from "@/components/learn/graph-lessons";
 import { WORKFLOW_LESSONS } from "@/components/learn/workflow-lessons";
 import { Markdown } from "@/components/markdown";
 
@@ -101,6 +102,7 @@ const LESSONS: Record<string, Lesson> = {
     run: GREET_RUN,
   },
   ...WORKFLOW_LESSONS,
+  ...GRAPH_LESSONS,
 };
 
 export const hasLesson = (id: string | null): id is string => id !== null && id in LESSONS;
