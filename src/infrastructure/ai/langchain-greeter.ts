@@ -3,7 +3,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import type { Greeting, IGreeter } from "@/domain/learn/greeter";
 import { GenerationError } from "@/domain/shared/errors";
 import { err, ok, type Result } from "@/domain/shared/result";
-import { toGenerationError } from "./error-mapping";
+import { toPublicGenerationError } from "./error-mapping";
 
 // The LangChain intro lesson (docs/lessons/01-langchain-intro.md) teaches the code in this file.
 export const GREET_MODEL = "gpt-4o-mini";
@@ -65,18 +65,7 @@ export class LangChainGreeter implements IGreeter {
         latencyMs: Date.now() - started,
       });
     } catch (error) {
-      const mapped = toGenerationError(error);
-      console.error(`[ai] greet ${mapped.kind}`, { model: GREET_MODEL, error });
-      // Public page: keep provider details in the server log, not on screen.
-      if (mapped.kind === "timeout") return err(mapped);
-      return err(
-        new GenerationError(
-          mapped.kind,
-          mapped.kind === "rate_limit"
-            ? "OpenAI is busy right now. Try again in a minute."
-            : "The model call failed. Try again later.",
-        ),
-      );
+      return err(toPublicGenerationError(error, "greet", { model: GREET_MODEL }));
     }
   }
 }

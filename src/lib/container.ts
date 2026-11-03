@@ -14,6 +14,7 @@ import { TopicService } from "@/application/topic-service";
 import type { IClock } from "@/domain/clock";
 import { MastraContentGenerator } from "@/infrastructure/ai/mastra-content-generator";
 import { LangChainGreeter } from "@/infrastructure/ai/langchain-greeter";
+import { LangChainWorkflows } from "@/infrastructure/ai/langchain-workflows";
 import { generatorConfig } from "@/infrastructure/ai/model-provider";
 import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
 import { getEnv } from "@/infrastructure/config/env";
@@ -115,10 +116,11 @@ export const container = {
     subscribers: () => subscriberService(createSupabasePublicClient()),
     /** Only calendarFeed() works here: the anonymous client can reach the schedule via the token only. */
     planner: () => plannerService(createSupabasePublicClient()),
-    /** Lesson playgrounds: 5 model calls per IP per minute. */
+    /** Lesson playgrounds: 5 runs per IP per minute, shared by every lesson. */
     learn: () =>
       (learn ??= new LearnService(
         new LangChainGreeter(getEnv().OPENAI_API_KEY),
+        new LangChainWorkflows(getEnv().OPENAI_API_KEY),
         new RateLimiter(5, 60_000, clock),
       )),
   },

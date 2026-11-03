@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-type Status = "idle" | "running" | "done" | "failed";
+export type Status = "idle" | "running" | "done" | "failed";
 const initialState: Awaited<ReturnType<typeof runGreet>> = {};
 
 const seconds = (ms: number) => `${(ms / 1000).toFixed(1)} s`;
 
 /** Live stopwatch while `running` is true (bamboo harness NodeTimer idea). */
-function useElapsed(running: boolean) {
+export function useElapsed(running: boolean) {
   const [ms, setMs] = useState(0);
   useEffect(() => {
     if (!running) return;
@@ -25,7 +25,7 @@ function useElapsed(running: boolean) {
 }
 
 /** The line between two steps of the pipeline. A dot travels down it while the node runs. */
-function Wire({ active }: { active: boolean }) {
+export function Wire({ active }: { active: boolean }) {
   return (
     <div aria-hidden className="relative mx-auto h-7 w-px bg-ember-text/50">
       {active && (
@@ -35,7 +35,7 @@ function Wire({ active }: { active: boolean }) {
   );
 }
 
-const STATUS_STYLE: Record<Status, string> = {
+export const STATUS_STYLE: Record<Status, string> = {
   idle: "text-muted-foreground",
   running: "text-ember-text",
   done: "text-ember-ok",

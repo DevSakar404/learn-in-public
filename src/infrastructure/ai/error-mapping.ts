@@ -46,3 +46,20 @@ export function toGenerationError(error: unknown): GenerationError {
   const message = error instanceof Error ? error.message : "Unknown error";
   return new GenerationError("provider", `The model provider returned an error: ${message}`);
 }
+
+/** For public pages: the provider detail goes to the server log, the reader gets a plain message. */
+export function toPublicGenerationError(
+  error: unknown,
+  label: string,
+  context: Record<string, unknown>,
+): GenerationError {
+  const mapped = toGenerationError(error);
+  console.error(`[ai] ${label} ${mapped.kind}`, { ...context, error });
+  if (mapped.kind === "timeout") return mapped;
+  return new GenerationError(
+    mapped.kind,
+    mapped.kind === "rate_limit"
+      ? "OpenAI is busy right now. Try again in a minute."
+      : "The model call failed. Try again later.",
+  );
+}

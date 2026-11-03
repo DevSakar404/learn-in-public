@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GreetPlayground } from "@/components/learn/greet-playground";
+import { WORKFLOW_LESSONS } from "@/components/learn/workflow-lessons";
 import { Markdown } from "@/components/markdown";
 
 // Teaching copy of greetNode (src/infrastructure/ai/langchain-greeter.ts runs the real one).
@@ -81,7 +82,7 @@ const GREET_RUN = (
   </>
 );
 
-interface Lesson {
+export interface Lesson {
   file: string;
   code: string;
   Flow: () => React.JSX.Element;
@@ -99,6 +100,7 @@ const LESSONS: Record<string, Lesson> = {
     match: GREET_MATCH,
     run: GREET_RUN,
   },
+  ...WORKFLOW_LESSONS,
 };
 
 export const hasLesson = (id: string | null): id is string => id !== null && id in LESSONS;
@@ -114,7 +116,7 @@ export function PlaygroundCta({ href }: { href: string }) {
         Try it in the playground
       </h2>
       <p className="mt-2 text-muted-foreground">
-        See the code with notes, then run the node with your name and watch each step.
+        See the code with notes, then run it and watch each step.
       </p>
       <Link
         href={href}
