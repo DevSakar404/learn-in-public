@@ -17,7 +17,7 @@ import { z } from "zod";
 const model = new ChatOpenAI({ model: "gpt-4o-mini", maxTokens: 200 });
 
 // One LLM call: our instructions (system) + the user's text (human).
-// The same helper as the LangChain lessons. Nodes call it.
+// Does the same job as the LangChain lessons' helper. Nodes call it.
 async function ask(system: string, input: string) {
   const reply = await model.invoke([
     ["system", system],
@@ -277,7 +277,7 @@ export const graph = new StateGraph(State)
 const GRAPH_MATCH = (
   <>
     <li>
-      <C>ask</C> is the same one-call helper as in the LangChain lessons. Every node calls it.
+      <C>ask</C> does the same job as the helper in the LangChain lessons. Every node calls it.
     </li>
     <li>
       <C>StateSchema</C> lists the state&apos;s fields with Zod. Each node returns only the fields
@@ -308,8 +308,8 @@ export const GRAPH_LESSONS: Record<GraphId, Lesson> = Object.fromEntries([
         run begins, <C>addEdge(&quot;greet&quot;, END)</C> where it stops.
       </li>
       <li>
-        <C>compile()</C> checks the wiring. A missing edge or a node named like a state key fails
-        here, before any call is paid for.
+        A node named like a state key fails at <C>addNode</C>. <C>compile()</C> checks the rest of
+        the wiring, so an edge to a missing node fails there, before any call is paid for.
       </li>
     </>,
     <>

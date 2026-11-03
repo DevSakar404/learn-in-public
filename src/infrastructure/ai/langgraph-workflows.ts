@@ -125,9 +125,9 @@ export async function chainGraph(model: ChatOpenAI, topic: string): Promise<Flow
   const points = bullets(run.state.outline).length;
   return {
     steps: run.steps,
-    output:
-      run.state.tweet ||
-      `The gate stopped the chain: it wanted 3 bullets and got ${points}, so writeTweet never ran.`,
+    output: run.graph.ran.includes("writeTweet")
+      ? run.state.tweet
+      : `The gate stopped the chain: it wanted 3 bullets and got ${points}, so writeTweet never ran.`,
     graph: run.graph,
   };
 }

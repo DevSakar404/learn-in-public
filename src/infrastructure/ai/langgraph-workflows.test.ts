@@ -109,6 +109,13 @@ describe("LangGraphWorkflows", () => {
       expect(result.output).toMatch(/got 2/);
       expect(calls).toHaveLength(1);
     });
+
+    it("does not blame the gate when the gate passed but the tweet came back empty", async () => {
+      reply = (system) => (system.includes("outline") ? "- one\n- two\n- three" : "");
+      const result = await run("lg-chain", "RAG");
+      expect(result.graph?.ran).toEqual(["writeOutline", "writeTweet"]);
+      expect(result.output).not.toMatch(/gate stopped/);
+    });
   });
 
   describe("lg-route", () => {

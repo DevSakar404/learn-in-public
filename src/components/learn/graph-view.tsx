@@ -17,12 +17,14 @@ export function GraphView({ mermaid, ran = [] }: { mermaid: string; ran?: string
   const text = prepareMermaid(mermaid, ran);
 
   useEffect(() => {
+    if (!resolvedTheme) return; // wait for the theme so the graph is drawn once
     let live = true;
     (async () => {
       try {
         const { default: m } = await import("mermaid");
         m.initialize({
           startOnLoad: false,
+          suppressErrorRendering: true,
           securityLevel: "strict",
           theme: resolvedTheme === "dark" ? "dark" : "default",
         });
@@ -53,7 +55,9 @@ export function GraphView({ mermaid, ran = [] }: { mermaid: string; ran?: string
           dangerouslySetInnerHTML={{ __html: svg }}
         />
       ) : (
-        <p className="py-6 text-center text-sm text-muted-foreground">Drawing the graph…</p>
+        <p role="status" className="py-6 text-center text-sm text-muted-foreground">
+          Drawing the graph…
+        </p>
       )}
       <figcaption className="mt-2 text-center text-xs text-muted-foreground">
         The graph, drawn by LangGraph. {path && <>Ran: {path}.</>}
