@@ -59,7 +59,7 @@ If you can say that without looking, you've got this lesson.
 
 ## What's next
 
-Right now `greetNode` is a function on its own. In the next lesson, LangGraph puts it inside a **graph**: a map of nodes and arrows that passes the state from one node to the next. The flow in the playground is already a tiny graph: start, one node, end.
+Right now `greetNode` is a function on its own. In the next lessons, you join calls like it into **workflows**: in a row, side by side, or in a loop. The flow in the playground is already the smallest one: start, one node, end.
 
 ```playground
 greet
