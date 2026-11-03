@@ -21,9 +21,9 @@ Six posts under topic "LangGraph", in the F11 lesson style (`docs/add-blog.md`):
 | File                                        | Title                             | Playground id    | Graph                                                                                         |
 | ------------------------------------------- | --------------------------------- | ---------------- | --------------------------------------------------------------------------------------------- |
 | `docs/lessons/07-langgraph-intro.md`        | LangGraph 1: a simple LLM call    | `lg-greet`       | START → `greet` → END. Introduces state, nodes, edges, `compile`, `invoke`                    |
-| `docs/lessons/08-langgraph-chaining.md`     | LangGraph 2: prompt chaining      | `lg-chain`       | `outline` → conditional edge (gate: exactly 3 bullets) → `tweet` or END                       |
+| `docs/lessons/08-langgraph-chaining.md`     | LangGraph 2: prompt chaining      | `lg-chain`       | `writeOutline` → conditional edge (gate: exactly 3 bullets) → `writeTweet` or END             |
 | `docs/lessons/09-langgraph-routing.md`      | LangGraph 3: routing              | `lg-route`       | `classify` → conditional edge → `billing` / `technical` / `general` → END                     |
-| `docs/lessons/10-langgraph-parallel.md`     | LangGraph 4: parallelization      | `lg-parallel`    | START fans out to `sentiment`, `summary`, `keyPoints` → `join` (fan-in) → END                 |
+| `docs/lessons/10-langgraph-parallel.md`     | LangGraph 4: parallelization      | `lg-parallel`    | START fans out to `rateSentiment`, `summarise`, `listKeyPoints` → `join` (fan-in) → END       |
 | `docs/lessons/11-langgraph-orchestrator.md` | LangGraph 5: orchestrator-workers | `lg-orchestrate` | `plan` → `Send` one `worker` per subtask (2–3) → `synthesize` → END. Reducer collects results |
 | `docs/lessons/12-langgraph-evaluator.md`    | LangGraph 6: evaluator-optimizer  | `lg-evaluate`    | `write` → `grade` → conditional edge: pass or round 3 → END, else back to `write` (a loop)    |
 

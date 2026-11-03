@@ -24,7 +24,7 @@ The single home for deferred work. In code, deliberate shortcuts are marked with
 
 ## Future features (interfaces are ready)
 
-- Learn section: curriculum, LangGraph lessons, n8n-style workflow view (React Flow, as in bamboo harness), code editor, CLI, chatbot.
+- Learn section: curriculum, n8n-style workflow view (React Flow, as in bamboo harness), code editor, CLI, chatbot.
 
 - `IPublisher` per platform, for auto-posting.
 - `INewsletterSender`, for sending emails.

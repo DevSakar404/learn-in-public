@@ -27,5 +27,5 @@
 - [x] Workflow service, all five workflows (gate stop, bad route, worker cap, round cap, unreadable grade) and errors are unit-tested.
 - [x] All five workflow playgrounds return real runs (checked locally, 2026-10-29).
 - [ ] Lessons 2–6 are published on the live site.
-- [ ] All six LangGraph playgrounds return real runs and draw their graph in light and dark (checked locally).
+- [x] All six LangGraph playgrounds return real runs and draw their graph in light and dark (checked locally, 2026-11-03).
 - [ ] LangGraph lessons 1–6 are published on the live site.
