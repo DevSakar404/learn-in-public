@@ -21,21 +21,21 @@
 
 ## Features and phase status
 
-| #                                      | Feature                                | Phase    | Status |
-| -------------------------------------- | -------------------------------------- | -------- | ------ |
-| —                                      | Setup (tooling, skeleton, docs)        | 0        | ✅     |
-| [F1](features/F1-admin-auth.md)        | Admin auth                             | 1        | ✅     |
-| [F2](features/F2-topics.md)            | Topics                                 | 2        | ✅     |
-| [F3](features/F3-notes-admin.md)       | Notes admin                            | 2        | ✅     |
-| [F4](features/F4-public-blog.md)       | Public blog                            | 2        | ✅     |
-| [F5](features/F5-seo-feeds.md)         | SEO + feeds                            | 2        | ✅     |
-| [F6](features/F6-ai-drafts.md)         | AI drafts                              | 3        | ✅     |
-| [F7](features/F7-newsletter.md)        | Newsletter                             | 4        | ✅     |
-| [F8](features/F8-dashboard.md)         | Dashboard                              | 4        | ✅     |
-| [F9](features/F9-slide-images.md)      | Slide images (themes)                  | post-MVP | ✅     |
-| [F10](features/F10-planner.md)         | Content planner + calendar reminders   | post-MVP | ✅     |
-| [F11](features/F11-learn-langchain.md) | Learn LangChain: lesson 1 + playground | post-MVP | ✅     |
-| [F12](features/F12-page-chat.md)       | Page chat: ask about highlighted text  | post-MVP | ⬜     |
-| [F13](features/F13-focus-timer.md)     | Focus timer: pomodoro + page sessions  | post-MVP | ✅     |
+| #                                      | Feature                                                                        | Phase    | Status |
+| -------------------------------------- | ------------------------------------------------------------------------------ | -------- | ------ |
+| —                                      | Setup (tooling, skeleton, docs)                                                | 0        | ✅     |
+| [F1](features/F1-admin-auth.md)        | Admin auth                                                                     | 1        | ✅     |
+| [F2](features/F2-topics.md)            | Topics                                                                         | 2        | ✅     |
+| [F3](features/F3-notes-admin.md)       | Notes admin                                                                    | 2        | ✅     |
+| [F4](features/F4-public-blog.md)       | Public blog                                                                    | 2        | ✅     |
+| [F5](features/F5-seo-feeds.md)         | SEO + feeds                                                                    | 2        | ✅     |
+| [F6](features/F6-ai-drafts.md)         | AI drafts                                                                      | 3        | ✅     |
+| [F7](features/F7-newsletter.md)        | Newsletter                                                                     | 4        | ✅     |
+| [F8](features/F8-dashboard.md)         | Dashboard                                                                      | 4        | ✅     |
+| [F9](features/F9-slide-images.md)      | Slide images (themes)                                                          | post-MVP | ✅     |
+| [F10](features/F10-planner.md)         | Content planner + calendar reminders                                           | post-MVP | ✅     |
+| [F11](features/F11-learn-langchain.md) | Learn LangChain: lesson 1 + playground + LangGraph lessons 1–6 with graph view | post-MVP | ✅     |
+| [F12](features/F12-page-chat.md)       | Page chat: ask about highlighted text                                          | post-MVP | ⬜     |
+| [F13](features/F13-focus-timer.md)     | Focus timer: pomodoro + page sessions                                          | post-MVP | ✅     |
 
 **Out of scope:** auto-publishing, sending email, multiple users/roles, comments/likes/analytics, AI image generation (templated slide images are F9). See [03-tech-debt.md](03-tech-debt.md) for what comes later.

@@ -72,7 +72,7 @@ The comment holds the editor fields. Everything below `---` is the note body.
 - Special blocks ([markdown.tsx](../src/components/markdown.tsx)):
   - ` ```concepts `: a header line, then one `term | definition | analogy` line per concept. Exactly 3 cells per line.
   - ` ```diagram `: only an id that exists in `DIAGRAMS` ([lesson-diagrams.tsx](../src/components/learn/lesson-diagrams.tsx)). Today: `greet-node`. Unknown id → shown as plain code, so leave it out.
-  - ` ```playground `: only an id that exists in `LESSONS` ([lesson-playground.tsx](../src/components/learn/lesson-playground.tsx)). Today: `greet`, `chain`, `route`, `parallel`, `orchestrate`, `evaluate`. Unknown id → leave it out.
+  - ` ```playground `: only an id that exists in `LESSONS` ([lesson-playground.tsx](../src/components/learn/lesson-playground.tsx)). Today: `greet`, `chain`, `route`, `parallel`, `orchestrate`, `evaluate`, `lg-greet`, `lg-chain`, `lg-route`, `lg-parallel`, `lg-orchestrate`, `lg-evaluate`. Unknown id → leave it out.
 - No new diagram or playground unless the admin asks. That is code work, not a blog post.
 
 ## 4. Check before handing over
