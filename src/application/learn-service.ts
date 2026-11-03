@@ -1,6 +1,11 @@
 import { z } from "zod";
 import type { Greeting, IGreeter } from "@/domain/learn/greeter";
-import { WORKFLOW_IDS, type IWorkflowRunner, type WorkflowRun } from "@/domain/learn/workflow";
+import {
+  WORKFLOW_IDS,
+  type IWorkflowRunner,
+  type PlainWorkflowId,
+  type WorkflowRun,
+} from "@/domain/learn/workflow";
 import { GenerationError } from "@/domain/shared/errors";
 import { err, type Result } from "@/domain/shared/result";
 import type { RateLimiter } from "./rate-limiter";
@@ -25,7 +30,7 @@ export type WorkflowInput = z.output<typeof workflowSchema>;
 export class LearnService {
   constructor(
     private readonly greeter: IGreeter,
-    private readonly workflows: IWorkflowRunner,
+    private readonly workflows: IWorkflowRunner<PlainWorkflowId>,
     private readonly limiter: RateLimiter,
   ) {}
 

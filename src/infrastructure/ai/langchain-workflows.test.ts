@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { WorkflowId } from "@/domain/learn/workflow";
+import type { PlainWorkflowId } from "@/domain/learn/workflow";
 
 // Stand-in for ChatOpenAI: a Runnable that answers with `reply(system, user)`, so each test
 // can answer per step whatever order parallel calls arrive in.
@@ -32,12 +32,12 @@ vi.mock("@langchain/openai", async () => {
 
 const { LangChainWorkflows } = await import("./langchain-workflows");
 
-const run = async (id: WorkflowId, input: string) => {
+const run = async (id: PlainWorkflowId, input: string) => {
   const result = await new LangChainWorkflows("sk-test").run(id, input);
   if (!result.ok) throw result.error;
   return result.value;
 };
-const runError = async (id: WorkflowId, input: string) => {
+const runError = async (id: PlainWorkflowId, input: string) => {
   const result = await new LangChainWorkflows("sk-test").run(id, input);
   if (result.ok) throw new Error("expected a failure");
   return result.error;

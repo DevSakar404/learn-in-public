@@ -3,7 +3,7 @@ import {
   WorkflowPlayground,
   type WorkflowPlaygroundProps,
 } from "@/components/learn/workflow-playground";
-import type { WorkflowId } from "@/domain/learn/workflow";
+import type { PlainWorkflowId, WorkflowId } from "@/domain/learn/workflow";
 
 // Teaching copies of the five workflows (src/infrastructure/ai/langchain-workflows.ts runs the real ones).
 // Escapes: \${ and \\n show up as ${ and \n in the code the reader sees.
@@ -143,7 +143,7 @@ export async function writeTagline(idea: string) {
   return { tagline, rounds: 3, passed: false };
 }`;
 
-const C = ({ children }: { children: React.ReactNode }) => (
+export const C = ({ children }: { children: React.ReactNode }) => (
   <code className="font-mono text-[0.85em] text-ember-text">{children}</code>
 );
 
@@ -154,39 +154,44 @@ const ASK_MATCH = (
   </li>
 );
 
-const llm = (label: string) => ({ label, kind: "llm" as const });
-const code = (label: string) => ({ label, kind: "code" as const });
+export const llm = (label: string) => ({ label, kind: "llm" as const });
+export const code = (label: string) => ({ label, kind: "code" as const });
 
-type Playground = Omit<WorkflowPlaygroundProps, "id">;
+export type Playground = Omit<WorkflowPlaygroundProps, "id">;
 
-const lesson = (
-  id: WorkflowId,
-  file: string,
-  src: string,
-  playground: Playground,
-  match: React.ReactNode,
-  run: React.ReactNode,
-): [WorkflowId, Lesson] => [
-  id,
-  {
-    file,
-    code: src,
-    Flow: () => <WorkflowPlayground id={id} {...playground} />,
-    match: (
-      <>
-        <p>Read the code on the left from top to bottom:</p>
-        <ol>
-          {ASK_MATCH}
-          {match}
-        </ol>
-      </>
-    ),
-    run,
-  },
-];
+/** Builds a lesson entry. `prelude` opens the "Match it to the code" list (e.g. what `ask` is). */
+export const lessonWith =
+  (prelude: React.ReactNode) =>
+  <Id extends WorkflowId>(
+    id: Id,
+    file: string,
+    src: string,
+    playground: Playground,
+    match: React.ReactNode,
+    run: React.ReactNode,
+  ): [Id, Lesson] => [
+    id,
+    {
+      file,
+      code: src,
+      Flow: () => <WorkflowPlayground id={id} {...playground} />,
+      match: (
+        <>
+          <p>Read the code on the left from top to bottom:</p>
+          <ol>
+            {prelude}
+            {match}
+          </ol>
+        </>
+      ),
+      run,
+    },
+  ];
+
+const lesson = lessonWith(ASK_MATCH);
 
 /** The five workflow lessons, by playground id. Spread into LESSONS. */
-export const WORKFLOW_LESSONS: Record<WorkflowId, Lesson> = Object.fromEntries([
+export const WORKFLOW_LESSONS: Record<PlainWorkflowId, Lesson> = Object.fromEntries([
   lesson(
     "chain",
     "prompt-chain.ts",
@@ -382,4 +387,4 @@ export const WORKFLOW_LESSONS: Record<WorkflowId, Lesson> = Object.fromEntries([
       </ol>
     </>,
   ),
-]) as Record<WorkflowId, Lesson>;
+]) as Record<PlainWorkflowId, Lesson>;
