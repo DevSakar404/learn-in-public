@@ -15,6 +15,7 @@ import type { IClock } from "@/domain/clock";
 import { MastraContentGenerator } from "@/infrastructure/ai/mastra-content-generator";
 import { LangChainGreeter } from "@/infrastructure/ai/langchain-greeter";
 import { LangChainWorkflows } from "@/infrastructure/ai/langchain-workflows";
+import { LangGraphWorkflows } from "@/infrastructure/ai/langgraph-workflows";
 import { generatorConfig } from "@/infrastructure/ai/model-provider";
 import { SupabaseAuthGateway } from "@/infrastructure/auth/supabase-auth-gateway";
 import { getEnv } from "@/infrastructure/config/env";
@@ -122,6 +123,7 @@ export const container = {
         new LangChainGreeter(getEnv().OPENAI_API_KEY),
         new LangChainWorkflows(getEnv().OPENAI_API_KEY),
         new RateLimiter(5, 60_000, clock),
+        new LangGraphWorkflows(getEnv().OPENAI_API_KEY),
       )),
   },
 };

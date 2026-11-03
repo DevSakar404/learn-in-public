@@ -9,8 +9,14 @@ import { RateLimiter } from "./rate-limiter";
 function make(limit = 5) {
   const greeter = new FakeGreeter();
   const workflows = new FakeWorkflowRunner();
+  const graphs = new FakeWorkflowRunner();
   const limiter = new RateLimiter(limit, 60_000, new FixedClock(new Date("2026-03-10T12:00:00Z")));
-  return { greeter, workflows, service: new LearnService(greeter, workflows, limiter) };
+  return {
+    greeter,
+    workflows,
+    graphs,
+    service: new LearnService(greeter, workflows, limiter, graphs),
+  };
 }
 const input = (name: string, website = "") => greetSchema.parse({ name, website });
 
@@ -64,6 +70,11 @@ describe("workflowSchema", () => {
     expect(workflowSchema.safeParse({ id: "route", input: "x".repeat(200) }).success).toBe(true);
     expect(workflowSchema.safeParse({ id: "agent", input: "hi" }).success).toBe(false);
   });
+
+  it("takes the LangGraph lesson ids too", () => {
+    expect(workflowSchema.safeParse({ id: "lg-chain", input: "hi" }).success).toBe(true);
+    expect(workflowSchema.safeParse({ id: "lg-agent", input: "hi" }).success).toBe(false);
+  });
 });
 
 describe("LearnService.runWorkflow", () => {
@@ -72,6 +83,24 @@ describe("LearnService.runWorkflow", () => {
     const result = await service.runWorkflow("ip", run("Where is my invoice?"));
     expect(result.ok && result.value.output).toBe("Where is my invoice?");
     expect(workflows.calls).toEqual([{ id: "route", input: "Where is my invoice?" }]);
+  });
+
+  it("sends LangGraph lesson ids to the graph runner", async () => {
+    const { workflows, graphs, service } = make();
+    await service.runWorkflow("ip", workflowSchema.parse({ id: "lg-route", input: "hi" }));
+    expect(graphs.calls).toEqual([{ id: "lg-route", input: "hi" }]);
+    expect(workflows.calls).toHaveLength(0);
+  });
+
+  it("limits graph runs with the same shared limit", async () => {
+    const { graphs, service } = make(1);
+    await service.runWorkflow("ip", run("hi"));
+    const blocked = await service.runWorkflow(
+      "ip",
+      workflowSchema.parse({ id: "lg-chain", input: "hi" }),
+    );
+    expect(!blocked.ok && blocked.error.kind).toBe("rate_limit");
+    expect(graphs.calls).toHaveLength(0);
   });
 
   it("returns the runner's error", async () => {

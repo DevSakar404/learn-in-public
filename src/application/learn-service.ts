@@ -1,7 +1,10 @@
 import { z } from "zod";
 import type { Greeting, IGreeter } from "@/domain/learn/greeter";
 import {
+  GRAPH_IDS,
+  isGraphId,
   WORKFLOW_IDS,
+  type GraphId,
   type IWorkflowRunner,
   type PlainWorkflowId,
   type WorkflowRun,
@@ -20,7 +23,7 @@ export const greetSchema = z.object({
 export type GreetInput = z.output<typeof greetSchema>;
 
 export const workflowSchema = z.object({
-  id: z.enum(WORKFLOW_IDS),
+  id: z.enum([...WORKFLOW_IDS, ...GRAPH_IDS]),
   input: z.string().trim().min(1, "Type something to run").max(200, "Keep it to 200 characters"),
   website: honeypot,
 });
@@ -32,6 +35,8 @@ export class LearnService {
     private readonly greeter: IGreeter,
     private readonly workflows: IWorkflowRunner<PlainWorkflowId>,
     private readonly limiter: RateLimiter,
+    /** The LangGraph lessons: the same workflows, built as graphs. */
+    private readonly graphs: IWorkflowRunner<GraphId>,
   ) {}
 
   async greet(clientKey: string, input: GreetInput): Promise<Result<Greeting, GenerationError>> {
@@ -42,7 +47,11 @@ export class LearnService {
     clientKey: string,
     input: WorkflowInput,
   ): Promise<Result<WorkflowRun, GenerationError>> {
-    return this.blocked(clientKey, input.website) ?? this.workflows.run(input.id, input.input);
+    const { id } = input;
+    return (
+      this.blocked(clientKey, input.website) ??
+      (isGraphId(id) ? this.graphs.run(id, input.input) : this.workflows.run(id, input.input))
+    );
   }
 
   /** Bots and readers over the limit get the same answer, and no model call. */
