@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { runWorkflow } from "@/app/actions/learn";
 import { STATUS_STYLE, useElapsed, Wire, type Status } from "@/components/learn/greet-playground";
+import { GraphView } from "@/components/learn/graph-view";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -164,6 +165,12 @@ export function WorkflowPlayground({ id, field, shape, note }: WorkflowPlaygroun
           </p>
         )}
       </form>
+
+      {run?.graph && (
+        <div className="mt-6">
+          <GraphView mermaid={run.graph.mermaid} ran={run.graph.ran} />
+        </div>
+      )}
 
       <ol aria-label="Workflow" className="mt-6">
         <li className="mx-auto w-fit max-w-full truncate rounded-full border border-ember-line px-4 py-1.5 font-mono text-xs">
