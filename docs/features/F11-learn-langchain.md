@@ -8,6 +8,8 @@
 
 **Lessons 2–6: LLM workflows** (prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer; design: [spec](../superpowers/specs/2026-10-29-llm-workflows-design.md)). Playground ids `chain`, `route`, `parallel`, `orchestrate`, `evaluate`. Files: domain `learn/workflow.ts` · application `LearnService.runWorkflow` · infra `ai/langchain-workflows.ts` · app `actions/learn.ts` (`runWorkflow`) · components `learn/workflow-playground.tsx` (one flow view for all five, drawn from the run's steps; steps in one lane sit side by side), `learn/workflow-lessons.tsx` (code + walkthroughs) · content `docs/lessons/02-06`.
 
+**LangGraph lessons 1–6** (the simple call + the same five workflows as `StateGraph`s; design: [spec](../superpowers/specs/2026-11-03-langgraph-notebook-design.md)). Playground ids `lg-greet`, `lg-chain`, `lg-route`, `lg-parallel`, `lg-orchestrate`, `lg-evaluate`, topic "LangGraph". Files: domain `learn/workflow.ts` (`GRAPH_IDS`, `WorkflowRun.graph`), `learn/graph-drawing.ts` (`prepareMermaid`) · application `LearnService.runWorkflow` sends `lg-*` ids to the graph runner · infra `ai/langgraph-workflows.ts` (same prompts and caps as `langchain-workflows.ts`, which exports them) · components `learn/graph-lessons.tsx`, `learn/graph-view.tsx` (Mermaid, loaded on demand, nodes that ran outlined) · content `docs/lessons/07-12`.
+
 **Rules**
 
 - The lesson is a normal note. A fenced block with language `playground` and body `greet` is replaced by a call to action at the end of the post. It opens `/blog/<slug>/playground`: the code on the left, the runnable flow (START → greetNode → END) on the right, stacked on phones. An unknown id leaves a normal post, and its playground URL is a 404.
@@ -25,3 +27,5 @@
 - [x] Workflow service, all five workflows (gate stop, bad route, worker cap, round cap, unreadable grade) and errors are unit-tested.
 - [x] All five workflow playgrounds return real runs (checked locally, 2026-10-29).
 - [ ] Lessons 2–6 are published on the live site.
+- [ ] All six LangGraph playgrounds return real runs and draw their graph in light and dark (checked locally).
+- [ ] LangGraph lessons 1–6 are published on the live site.
