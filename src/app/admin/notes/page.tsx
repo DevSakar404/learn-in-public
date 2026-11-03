@@ -1,3 +1,4 @@
+import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { NativeSelect } from "@/components/native-select";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PageHeader } from "@/components/page-header";
 import { NOTE_STATUSES, type NoteStatus } from "@/domain/note/note";
 import { container } from "@/lib/container";
 import { formatDate } from "@/lib/format";
@@ -29,25 +31,34 @@ export default async function NotesPage({ searchParams }: PageProps<"/admin/note
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Notes</h1>
-        <Button asChild>
-          <Link href="/admin/notes/new">New note</Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Notes"
+        description={`${notes.length} ${notes.length === 1 ? "note" : "notes"}`}
+        actions={
+          <Button asChild>
+            <Link href="/admin/notes/new">
+              <PlusIcon aria-hidden /> New note
+            </Link>
+          </Button>
+        }
+      />
 
-      <form className="flex flex-wrap items-end gap-3" role="search" aria-label="Filter notes">
-        <div className="space-y-1">
+      <form
+        className="grid grid-cols-2 items-end gap-3 sm:flex"
+        role="search"
+        aria-label="Filter notes"
+      >
+        <div className="space-y-1.5">
           <Label htmlFor="status">Status</Label>
-          <NativeSelect id="status" name="status" defaultValue={status ?? ""} className="w-40">
+          <NativeSelect id="status" name="status" defaultValue={status ?? ""} className="sm:w-40">
             <option value="">All</option>
             <option value="draft">Draft</option>
             <option value="published">Published</option>
           </NativeSelect>
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <Label htmlFor="topic">Topic</Label>
-          <NativeSelect id="topic" name="topic" defaultValue={topicId ?? ""} className="w-52">
+          <NativeSelect id="topic" name="topic" defaultValue={topicId ?? ""} className="sm:w-52">
             <option value="">All topics</option>
             {topics.map((t) => (
               <option key={t.id} value={t.id}>
@@ -56,7 +67,7 @@ export default async function NotesPage({ searchParams }: PageProps<"/admin/note
             ))}
           </NativeSelect>
         </div>
-        <Button type="submit" variant="secondary">
+        <Button type="submit" variant="secondary" className="col-span-2 sm:col-span-1">
           Filter
         </Button>
       </form>
@@ -66,26 +77,32 @@ export default async function NotesPage({ searchParams }: PageProps<"/admin/note
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Topic</TableHead>
+              <TableHead className="hidden sm:table-cell">Topic</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
+              <TableHead className="hidden sm:table-cell">Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {notes.map((n) => (
               <TableRow key={n.id}>
-                <TableCell className="font-medium">
-                  <Link href={`/admin/notes/${n.id}`} className="hover:underline">
+                <TableCell className="py-3 whitespace-normal">
+                  <Link
+                    href={`/admin/notes/${n.id}`}
+                    className="font-medium underline-offset-4 hover:underline"
+                  >
                     {n.title}
                   </Link>
+                  <p className="mt-1 text-xs text-muted-foreground sm:hidden">
+                    {n.topic.name} · {formatDate(n.publishedAt ?? n.createdAt, timeZone)}
+                  </p>
                 </TableCell>
-                <TableCell>{n.topic.name}</TableCell>
-                <TableCell>
+                <TableCell className="hidden sm:table-cell">{n.topic.name}</TableCell>
+                <TableCell className="align-top sm:align-middle">
                   <Badge variant={n.status === "published" ? "default" : "outline"}>
                     {n.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="hidden text-muted-foreground sm:table-cell">
                   {formatDate(n.publishedAt ?? n.createdAt, timeZone)}
                 </TableCell>
               </TableRow>

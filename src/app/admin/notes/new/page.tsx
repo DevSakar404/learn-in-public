@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { NoteEditor } from "@/components/note-editor";
+import { PageHeader } from "@/components/page-header";
 import { container } from "@/lib/container";
 import { requireAdminPage } from "../../../_lib/auth";
 
@@ -10,8 +11,8 @@ export default async function NewNotePage() {
   const topics = await (await container.admin.topics()).list();
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">New note</h1>
+    <div className="space-y-8">
+      <PageHeader title="New note" description="Saved as a draft. Publish it when it's ready." />
       {topics.length ? (
         <NoteEditor topics={topics} />
       ) : (

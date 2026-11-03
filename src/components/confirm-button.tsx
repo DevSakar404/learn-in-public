@@ -19,6 +19,7 @@ interface Props {
   description: string;
   confirmLabel?: string;
   disabled?: boolean;
+  size?: React.ComponentProps<typeof Button>["size"];
   onConfirm: () => void;
 }
 
@@ -29,12 +30,13 @@ export function ConfirmButton({
   description,
   confirmLabel = "Delete",
   disabled,
+  size,
   onConfirm,
 }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" disabled={disabled}>
+        <Button variant="destructive" size={size} disabled={disabled}>
           {label}
         </Button>
       </AlertDialogTrigger>

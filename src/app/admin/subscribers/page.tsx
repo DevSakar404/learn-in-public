@@ -1,3 +1,5 @@
+import { DownloadIcon } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,38 +24,40 @@ export default async function SubscribersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Subscribers</h1>
-          <p className="text-muted-foreground">
-            {active} active {active === 1 ? "subscriber" : "subscribers"} ({subscribers.length}{" "}
-            total)
-          </p>
-        </div>
-        {/* A plain link: the route handler streams a CSV download. */}
-        <Button variant="outline" asChild>
-          <a href="/admin/subscribers/export" download>
-            Export CSV
-          </a>
-        </Button>
-      </div>
+      <PageHeader
+        title="Subscribers"
+        description={`${active} active ${active === 1 ? "subscriber" : "subscribers"} (${subscribers.length} total)`}
+        actions={
+          // A plain link: the route handler streams a CSV download.
+          <Button variant="outline" asChild>
+            <a href="/admin/subscribers/export" download>
+              <DownloadIcon aria-hidden /> Export CSV
+            </a>
+          </Button>
+        }
+      />
       {subscribers.length ? (
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Email</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Subscribed</TableHead>
+              <TableHead className="hidden sm:table-cell">Subscribed</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {subscribers.map((s) => (
               <TableRow key={s.id}>
-                <TableCell>{s.email}</TableCell>
+                <TableCell className="py-3 break-all whitespace-normal">
+                  {s.email}
+                  <p className="mt-1 text-xs text-muted-foreground sm:hidden">
+                    {formatDate(s.createdAt, timeZone)}
+                  </p>
+                </TableCell>
                 <TableCell>
                   <Badge variant={s.status === "active" ? "default" : "outline"}>{s.status}</Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="hidden text-muted-foreground sm:table-cell">
                   {formatDate(s.createdAt, timeZone)}
                 </TableCell>
               </TableRow>

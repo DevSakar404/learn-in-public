@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
 import { toast } from "sonner";
@@ -25,7 +26,7 @@ export function NoteActions({ note }: { note: Pick<Note, "id" | "slug" | "status
         <>
           <Button variant="outline" asChild>
             <Link href={`/blog/${note.slug}`} target="_blank">
-              View on blog
+              View on blog <ArrowUpRightIcon data-icon="inline-end" aria-hidden />
             </Link>
           </Button>
           <Button variant="secondary" disabled={pending} onClick={() => run(unpublishNote)}>

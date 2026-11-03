@@ -14,10 +14,10 @@ export function LoginForm({ next }: { next?: string }) {
   const errors = state.fieldErrors ?? {};
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm shadow-xs [--card-spacing:--spacing(6)]">
       <CardHeader>
         <CardTitle>
-          <h1>Admin login</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Admin login</h1>
         </CardTitle>
         <CardDescription>Sign in to write notes and review drafts.</CardDescription>
       </CardHeader>
@@ -53,7 +53,7 @@ export function LoginForm({ next }: { next?: string }) {
             <FieldError id="password-error" errors={errors.password} />
           </div>
           <FormMessage state={state} />
-          <SubmitButton className="w-full" pendingText="Signing in…">
+          <SubmitButton size="lg" className="w-full" pendingText="Signing in…">
             Sign in
           </SubmitButton>
         </form>

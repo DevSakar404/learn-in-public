@@ -1,6 +1,7 @@
 import { CheckCircle2Icon, CircleIcon } from "lucide-react";
 import Link from "next/link";
 import { CalendarLink } from "@/components/calendar-link";
+import { PageHeader } from "@/components/page-header";
 import { PlannerHeatmap } from "@/components/planner-heatmap";
 import { PlannerSettingsForm } from "@/components/planner-settings-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,11 +21,14 @@ const niceDate = (key: string) =>
 
 function Check({ done, children }: { done: boolean; children: React.ReactNode }) {
   return (
-    <li className="flex items-center gap-2">
+    <li className="flex items-start gap-2.5 [&>svg]:mt-0.5">
       {done ? (
-        <CheckCircle2Icon className="size-4 text-emerald-500" aria-label="done" />
+        <CheckCircle2Icon
+          className="size-4 shrink-0 text-emerald-600 dark:text-emerald-500"
+          aria-label="done"
+        />
       ) : (
-        <CircleIcon className="size-4 text-muted-foreground" aria-label="to do" />
+        <CircleIcon className="size-4 shrink-0 text-muted-foreground" aria-label="to do" />
       )}
       <span className={done ? "text-muted-foreground line-through" : undefined}>{children}</span>
     </li>
@@ -45,18 +49,17 @@ export default async function PlannerPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-2xl font-bold">Planner</h1>
-        <p className="text-muted-foreground">{dayLabel}</p>
-      </div>
+      <PageHeader title="Planner" description={dayLabel} />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <Card>
           <CardHeader>
             <CardDescription>Current streak</CardDescription>
-            <CardTitle className="text-3xl tabular-nums">{o.streak}</CardTitle>
+            <CardTitle className="text-3xl font-semibold tracking-tight tabular-nums">
+              {o.streak}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="text-xs text-muted-foreground">
             {o.todo.noteDone
               ? "Today's note is published."
               : `Publish today by ${o.settings.dailyTime} to keep it going.`}
@@ -65,18 +68,20 @@ export default async function PlannerPage() {
         <Card>
           <CardHeader>
             <CardDescription>Longest streak</CardDescription>
-            <CardTitle className="text-3xl tabular-nums">{o.longestStreak}</CardTitle>
+            <CardTitle className="text-3xl font-semibold tracking-tight tabular-nums">
+              {o.longestStreak}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">days in a row</CardContent>
+          <CardContent className="text-xs text-muted-foreground">days in a row</CardContent>
         </Card>
-        <Card>
+        <Card className="col-span-2 sm:col-span-1">
           <CardHeader>
             <CardDescription>Weekly YouTube recap</CardDescription>
-            <CardTitle className="text-xl">
+            <CardTitle className="text-xl font-semibold tracking-tight">
               {o.youtube.isToday ? "Today" : niceDate(o.youtube.date)}
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="text-xs text-muted-foreground">
             {o.youtube.done
               ? "This week's recap is posted."
               : `Due ${o.youtube.weekday} at ${o.settings.dailyTime}.`}
@@ -85,15 +90,15 @@ export default async function PlannerPage() {
       </div>
 
       <section aria-labelledby="history" className="space-y-3">
-        <h2 id="history" className="text-lg font-semibold">
+        <h2 id="history" className="font-semibold tracking-tight">
           Streak history
         </h2>
         <PlannerHeatmap days={o.heatmap} />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section aria-labelledby="today" className="space-y-3 rounded-xl border p-4">
-          <h2 id="today" className="font-semibold">
+        <section aria-labelledby="today" className="space-y-4 rounded-xl border bg-card p-4 sm:p-6">
+          <h2 id="today" className="font-semibold tracking-tight">
             Today · {o.settings.dailyTime}
           </h2>
           <ul className="space-y-2 text-sm">
@@ -116,14 +121,17 @@ export default async function PlannerPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="upcoming" className="space-y-3 rounded-xl border p-4">
-          <h2 id="upcoming" className="font-semibold">
+        <section
+          aria-labelledby="upcoming"
+          className="space-y-4 rounded-xl border bg-card p-4 sm:p-6"
+        >
+          <h2 id="upcoming" className="font-semibold tracking-tight">
             Next 7 days
           </h2>
           <ol className="space-y-2 text-sm">
             {o.upcoming.map((d) => (
               <li key={d.date} className="flex gap-3">
-                <span className="w-24 shrink-0 font-medium">
+                <span className="w-20 shrink-0 font-medium sm:w-24">
                   {d.date === o.today ? "Today" : niceDate(d.date)}
                 </span>
                 <span className="text-muted-foreground">{d.items.join(" · ")}</span>
@@ -133,16 +141,22 @@ export default async function PlannerPage() {
         </section>
       </div>
 
-      <section aria-labelledby="schedule" className="space-y-4 rounded-xl border p-4">
-        <h2 id="schedule" className="font-semibold">
+      <section
+        aria-labelledby="schedule"
+        className="space-y-4 rounded-xl border bg-card p-4 sm:p-6"
+      >
+        <h2 id="schedule" className="font-semibold tracking-tight">
           Schedule
         </h2>
         <PlannerSettingsForm schedule={o.settings} timeZone={timeZone} />
       </section>
 
-      <section aria-labelledby="reminders" className="space-y-4 rounded-xl border p-4">
+      <section
+        aria-labelledby="reminders"
+        className="space-y-4 rounded-xl border bg-card p-4 sm:p-6"
+      >
         <div>
-          <h2 id="reminders" className="font-semibold">
+          <h2 id="reminders" className="font-semibold tracking-tight">
             Reminders in your calendar
           </h2>
           <p className="text-sm text-muted-foreground">

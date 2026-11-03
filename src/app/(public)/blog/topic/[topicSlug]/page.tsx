@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { NoteCard } from "@/components/note-card";
+import Link from "next/link";
+import { NoteCard, NoteList } from "@/components/note-card";
 import { container } from "@/lib/container";
 import { formatDate } from "@/lib/format";
 
@@ -29,20 +30,25 @@ export default async function TopicPage({ params }: PageProps<"/blog/topic/[topi
   const { timeZone } = container.config();
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-sm text-muted-foreground">Topic</p>
-        <h1 className="text-3xl font-bold tracking-tight">{topic.value.name}</h1>
+    <div className="space-y-12">
+      <header className="space-y-3">
+        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+          <Link href="/blog" className="transition-colors hover:text-foreground">
+            Notes
+          </Link>{" "}
+          / Topic
+        </p>
+        <h1 className="text-4xl font-semibold tracking-tighter">{topic.value.name}</h1>
         {topic.value.description && (
-          <p className="text-muted-foreground">{topic.value.description}</p>
+          <p className="text-lg leading-relaxed text-muted-foreground">{topic.value.description}</p>
         )}
       </header>
       {notes.length ? (
-        <div className="grid gap-4">
+        <NoteList>
           {notes.map((n) => (
             <NoteCard key={n.id} note={n} date={formatDate(n.publishedAt!, timeZone)} />
           ))}
-        </div>
+        </NoteList>
       ) : (
         <p className="text-muted-foreground">No notes in this topic yet.</p>
       )}

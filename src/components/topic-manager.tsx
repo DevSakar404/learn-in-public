@@ -24,10 +24,10 @@ function TopicForm({ topic }: { topic?: Topic }) {
   return (
     <form
       action={action}
-      className="grid gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-start"
+      className="grid gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-end"
       noValidate
     >
-      <div className="space-y-1">
+      <div className="space-y-1.5 sm:self-start">
         <Label htmlFor={`${prefix}-name`} className={topic ? "sr-only" : undefined}>
           Name
         </Label>
@@ -42,7 +42,7 @@ function TopicForm({ topic }: { topic?: Topic }) {
         />
         <FieldError id={`${prefix}-name-error`} errors={errors.name} />
       </div>
-      <div className="space-y-1">
+      <div className="space-y-1.5 sm:self-start">
         <Label htmlFor={`${prefix}-description`} className={topic ? "sr-only" : undefined}>
           Description
         </Label>
@@ -57,7 +57,7 @@ function TopicForm({ topic }: { topic?: Topic }) {
       </div>
       <SubmitButton
         variant={topic ? "outline" : "default"}
-        className={topic ? undefined : "sm:mt-5"}
+        className={topic ? "justify-self-start" : "justify-self-start sm:mt-5 sm:self-start"}
         pendingText="Saving…"
       >
         {topic ? "Save" : "Add topic"}
@@ -69,24 +69,25 @@ function TopicForm({ topic }: { topic?: Topic }) {
 function TopicRow({ topic }: { topic: Topic }) {
   const [pending, startTransition] = useTransition();
   return (
-    <li className="flex flex-col gap-3 rounded-xl border p-4 lg:flex-row lg:items-start">
-      <div className="flex-1">
-        <TopicForm topic={topic} />
-        <p className="mt-2 text-xs text-muted-foreground">/blog/topic/{topic.slug}</p>
+    <li className="space-y-3 py-5 first:pt-0">
+      <TopicForm topic={topic} />
+      <div className="flex items-center justify-between gap-3">
+        <p className="truncate font-mono text-xs text-muted-foreground">/blog/topic/{topic.slug}</p>
+        <ConfirmButton
+          size="sm"
+          label="Delete"
+          title={`Delete "${topic.name}"?`}
+          description="Topics that still have notes can't be deleted. Move or delete those notes first."
+          disabled={pending}
+          onConfirm={() =>
+            startTransition(async () => {
+              const r = await deleteTopic(topic.id);
+              if (r.error) toast.error(r.error);
+              else toast.success(r.message);
+            })
+          }
+        />
       </div>
-      <ConfirmButton
-        label="Delete"
-        title={`Delete "${topic.name}"?`}
-        description="Topics that still have notes can't be deleted. Move or delete those notes first."
-        disabled={pending}
-        onConfirm={() =>
-          startTransition(async () => {
-            const r = await deleteTopic(topic.id);
-            if (r.error) toast.error(r.error);
-            else toast.success(r.message);
-          })
-        }
-      />
     </li>
   );
 }
@@ -94,14 +95,17 @@ function TopicRow({ topic }: { topic: Topic }) {
 export function TopicManager({ topics }: { topics: Topic[] }) {
   return (
     <div className="space-y-8">
-      <section aria-labelledby="add-topic" className="space-y-3 rounded-xl border p-4">
-        <h2 id="add-topic" className="font-semibold">
+      <section
+        aria-labelledby="add-topic"
+        className="space-y-4 rounded-xl border bg-card p-4 sm:p-6"
+      >
+        <h2 id="add-topic" className="font-semibold tracking-tight">
           Add a topic
         </h2>
         <TopicForm />
       </section>
       {topics.length ? (
-        <ul className="space-y-3" aria-label="Topics">
+        <ul className="divide-y divide-border/70" aria-label="Topics">
           {topics.map((t) => (
             <TopicRow key={t.id} topic={t} />
           ))}

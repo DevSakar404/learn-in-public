@@ -13,11 +13,14 @@ export function NewsletterForm() {
   const emailErrors = state.fieldErrors?.email;
 
   return (
-    <section aria-labelledby="newsletter" className="rounded-xl border bg-muted/30 p-6">
-      <h2 id="newsletter" className="text-xl font-semibold">
+    <section
+      aria-labelledby="newsletter"
+      className="rounded-2xl border bg-card p-6 shadow-xs sm:p-8"
+    >
+      <h2 id="newsletter" className="text-xl font-semibold tracking-tight">
         Get the notes by email
       </h2>
-      <p className="mt-1 text-muted-foreground">
+      <p className="mt-1.5 text-muted-foreground">
         A weekly round-up of what I learned. No spam, unsubscribe anytime.
       </p>
       {state.ok ? (
@@ -25,7 +28,7 @@ export function NewsletterForm() {
           {state.message}
         </p>
       ) : (
-        <form action={action} className="mt-4 space-y-2" noValidate>
+        <form action={action} className="mt-5 space-y-2" noValidate>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Label htmlFor="newsletter-email" className="sr-only">
               Email address
@@ -38,6 +41,7 @@ export function NewsletterForm() {
               defaultValue={state.values?.email}
               key={state.values?.email}
               placeholder="you@example.com"
+              className="h-9"
               required
               aria-invalid={!!emailErrors}
               aria-describedby={emailErrors ? "newsletter-email-error" : undefined}
@@ -53,7 +57,9 @@ export function NewsletterForm() {
                 autoComplete="off"
               />
             </div>
-            <SubmitButton pendingText="Subscribing…">Subscribe</SubmitButton>
+            <SubmitButton size="lg" className="px-4" pendingText="Subscribing…">
+              Subscribe
+            </SubmitButton>
           </div>
           <FieldError id="newsletter-email-error" errors={emailErrors} />
           {!emailErrors && <FormMessage state={state} />}
